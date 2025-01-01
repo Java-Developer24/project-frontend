@@ -11,17 +11,22 @@ import {
 import { Eye, EyeOff } from "lucide-react";
 import { useState, useContext, useRef } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
+import Turnstile, { useTurnstile } from "react-turnstile";
+
 import axios from "axios";
 import { AuthContext } from "@/utils/AppContext";
 import toast from "react-hot-toast";
 
 const ChangePassword = () => {
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [captchaValue, setCaptchaValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const recaptchaRef = useRef(null);
+  const turnstile = useTurnstile();
+
 
   const currentPassword = useInputValidation("", passwordValidator);
   const password = useInputValidation("", passwordValidator);
@@ -30,7 +35,8 @@ const ChangePassword = () => {
   );
 
   const { user } = useContext(AuthContext);
-
+  console.log(user.userId)
+  const token = localStorage.getItem("paidsms-token");
   const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
   const toggleConfirmPasswordVisibility = () =>
     setShowConfirmPassword((prev) => !prev);
@@ -51,45 +57,59 @@ const ChangePassword = () => {
     }
 
     setIsLoading(true);
-
-    const changePasswordPromise = new Promise((resolve, reject) => {
-      const changePasswordRequest = async () => {
-        try {
-          const response = await axios.post("/change-password-authenticated", {
+console.log(user)
+    const changePasswordRequest = async () => {
+      try {
+        const response = await axios.post(
+          '/api/user/change-password',
+          {
             currentPassword: currentPassword.value,
             newPassword: password.value,
             userId: user.userId,
             captcha: captchaValue,
-          });
-          resolve(response.data);
-        } catch (error) {
-          reject(error);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-
-      changePasswordRequest();
-    });
-
-    await toast.promise(changePasswordPromise, {
+          },
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            }
+          } 
+        );
+        console.log(response.data)
+        return response.data;  // Return the response data directly
+       
+      } catch (error) {
+        // If there's an error, throw it to be caught by the error handler
+        throw error;
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    await toast.promise(changePasswordRequest(), {
       loading: "Changing password...",
-      success: () => {
+      success: (data) => {
+        console.log("Success Data:", data);
+        // Clear form fields on success
         currentPassword.clear();
         password.clear();
         confirmPassword.clear();
-        setCaptchaValue("");
-        recaptchaRef.current.reset();
-        return "Password changed successfully!";
+        turnstile.reset();
+    
+        // Use the message from the backend if available, or the default success message
+        return data.message || "Password changed successfully!";
       },
       error: (error) => {
-        const errorMessage =
-          error.response?.data?.error ||
-          "Failed to change password. Please try again.";
-        recaptchaRef.current.reset();
+        // Handle the error from the backend response
+        const errorMessage = error.response?.data?.message || "Failed to change password. Please try again.";
+        if (turnstile) {
+          turnstile.reset();
+        }
         return errorMessage;
-      },
+      }
     });
+    
+   
   };
 
   return (
@@ -208,12 +228,13 @@ const ChangePassword = () => {
               </div>
             </div>
             <div className="flex justify-center mb-4 mt-8">
-              <ReCAPTCHA
-                ref={recaptchaRef}
-                theme="dark"
-                className="scale-[0.85] md:transform-none"
-                sitekey="6LeAfAoqAAAAAPKwGgbxZpBXsBZ4hZ1iazAvta6e"
-                onChange={(value) => setCaptchaValue(value)}
+            <Turnstile
+                
+                sitekey="0x4AAAAAAA3HP5RN6qhb67vx" // Replace with your site key
+                onVerify={(token) => {
+                  // console.log("Captcha token:", token);
+                  setCaptchaValue(token);
+                }} // Store the CAPTCHA token
               />
             </div>
             <Button

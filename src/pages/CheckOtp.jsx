@@ -23,7 +23,7 @@ const CheckOtp = () => {
 
     try {
       const response = await axios.get(
-        `/check-otp?otp=${encodedotp}&api_key=${apiKey}`
+        `/api/server/check-otp?otp=${encodedotp}&api_key=${apiKey}`
       );
 
       setOtp("");

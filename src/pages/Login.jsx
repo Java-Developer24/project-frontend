@@ -6,7 +6,10 @@ import { Icon } from "@/components/ui/Icons";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Eye, EyeOff } from "lucide-react";
+import { useLocation } from 'react-router-dom';
 import ReCAPTCHA from "react-google-recaptcha";
+import Turnstile, { useTurnstile } from "react-turnstile";
+
 import { useNavigate } from "react-router-dom";
 import { useInputValidation } from "6pp";
 import {
@@ -21,6 +24,8 @@ import { useGoogleLogin } from "@react-oauth/google";
 import Otp from "@/components/ui/Otp";
 
 const Login = () => {
+  const turnstile = useTurnstile();
+
   const [showPassword, setShowPassword] = useState(false);
   const [captchaValue, setCaptchaValue] = useState("");
   const [forgotPass, setForgotPass] = useState(false);
@@ -36,6 +41,18 @@ const Login = () => {
   const [resendEnabled, setResendEnabled] = useState(false);
   const [timer, setTimer] = useState(60);
   const [emailSent, setEmailSent] = useState(false);
+
+  const location = useLocation();
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const errorMessage = queryParams.get('error');
+
+    if (errorMessage) {
+      toast.error(errorMessage); // Display error toast if error exists in query
+    }
+  },  [location.search]);
+
   const forgotPassword = useInputValidation("", passwordValidator);
   const confirmPassword = useInputValidation("", (value) =>
     confirmPasswordValidator(value, forgotPassword.value)
@@ -77,7 +94,7 @@ const Login = () => {
       const verifyOtpRequest = async () => {
         try {
           // Send verifyOtp request
-          const response = await axios.post("/verify-forgot-otp", {
+          const response = await axios.post("/api/user/verify-forgot-otp", {
             email: email.value,
             otp,
           });
@@ -118,7 +135,7 @@ const Login = () => {
       const resendOtpRequest = async () => {
         try {
           // Send ResendOtp request
-          await axios.post("/resend-forgot-otp", { email: email.value });
+          await axios.post("/api/user/resend-forgot-otp", { email: email.value });
           resolve(); // Resolve the promise on success
         } catch (error) {
           // Reject the promise on error
@@ -151,7 +168,7 @@ const Login = () => {
     const forgotPassPromise = new Promise((resolve, reject) => {
       const forgotPassRequest = async () => {
         try {
-          await axios.post("/forgot-password", {
+          await axios.post("/api/user/forgot-password", {
             email: email.value,
           });
 
@@ -190,9 +207,9 @@ const Login = () => {
       const passwordChangeRequest = async () => {
         try {
           // Send passwordChange request
-          await axios.post("/change-password-unauthenticated", {
+          await axios.post("/api/user/change-password-unauthenticated", {
             email: email.value,
-            password: forgotPassword.value,
+            newPassword: forgotPassword.value,
           });
           resolve(); // Resolve the promise on success
         } catch (error) {
@@ -226,77 +243,58 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!captchaValue) {
-      toast.error("Please complete the CAPTCHA");
+  
+    // Validate email, password, and captchaValue
+    if (!emailAdd?.value || !password?.value || !captchaValue) {
+      toast.error("Please fill out all fields and complete the CAPTCHA");
       return;
     }
+  
     setIsLoading(true);
-
-    // Create a promise for the login request
-    const loginPromise = new Promise((resolve, reject) => {
-      const loginRequest = async () => {
-        try {
-          // Send login request
-          const response = await axios.post("/login", {
-            email: emailAdd.value,
-            password: password.value,
-            captcha: captchaValue,
-          });
-
-          const { token } = response.data;
-          login(token);
-          resolve(); // Resolve the promise on success
-        } catch (error) {
-          // Reject the promise on error
-          reject(error);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-
-      loginRequest();
-    });
-    // Show toast notifications based on the promise state
-    await toast.promise(loginPromise, {
-      loading: "Logging in...",
-      success: () => {
-        navigate("/"); // Redirect on success
-        return "Login successful!";
-      },
-      error: (error) => {
-        const errorMessage =
-          error.response?.data?.error || "Login failed. Please try again.";
-        return errorMessage;
-      },
-    });
-  };
-
-  const handleGoogleLogin = useGoogleLogin({
-    onSuccess: async (codeResponse) => {
-      try {
-        const response = await axios.post("/google-login", {
-          token: codeResponse.access_token,
-        });
-
-        // Destructure the token from the API response
-        const { token } = response.data;
-
-        // Call the login function with the token
-        login(token);
-
-        // Navigate to the home page
-        navigate("/");
-      } catch (error) {
-        // Display an error message using toast if login fails
-        toast.error(error.response?.data?.error || "Login failed");
+  
+    try {
+      const response = await axios.post("/api/auth/login", {
+        email: emailAdd.value,
+        password: password.value,
+        captcha: captchaValue,
+      });
+  
+      const { token } = response.data;
+      login(token); // Assuming login is a function that saves the token
+  
+      toast.success("Login successful!", {
+        autoClose: 3000, // The toast will remain open for 3 seconds
+      });
+      navigate("/");
+  
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || "Login failed. Please try again.";
+      toast.error(errorMessage);
+  
+      if (turnstile) {
+        turnstile.reset();
       }
-    },
-    onError: (error) => {
-      // Display an error message using toast if Google login fails
-      toast.error("Login Failed: " + error.message);
-    },
-  });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const handleGoogleLogin = async () => {
+    try {
+      
+     window.location.href = "http://localhost:3000/api/auth/google/login"
+    } catch (error) {
+      // Example of redirecting with error message
+        navigate(`/login?error=${encodeURIComponent(error?.response?.data?.message || "Login failed. Please try again.")}`);
+    }
+  };
+  
+  // const handleGoogleLogin = () => {
+  //   // Redirect to the backend's Google OAuth route
+  //   window.location.href = "http://localhost:3000/api/auth/google/login";
+  // };
+ 
+ 
 
   return (
     <div className="h-[calc(100dvh-4rem)] flex items-center justify-center">
@@ -380,12 +378,20 @@ const Login = () => {
                 </div>
 
                 <div className="flex justify-center mb-4 mt-8">
-                  <ReCAPTCHA
+                <Turnstile
+                
+            sitekey="0x4AAAAAAA3HP5RN6qhb67vx" // Replace with your site key
+            onVerify={(token) => {
+              // console.log("Captcha token:", token);
+              setCaptchaValue(token);
+            }} // Store the CAPTCHA token
+          />
+                  {/* <ReCAPTCHA
                     theme="dark"
                     className="scale-[0.85] md:transform-none"
                     sitekey="6LeAfAoqAAAAAPKwGgbxZpBXsBZ4hZ1iazAvta6e"
                     onChange={(value) => setCaptchaValue(value)}
-                  />
+                  /> */}
                 </div>
 
                 <Button

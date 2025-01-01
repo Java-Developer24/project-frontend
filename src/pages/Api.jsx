@@ -12,6 +12,8 @@ const Api = () => {
   const [openSection, setOpenSection] = useState(null);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const token = localStorage.getItem("paidsms-token");
+
 
   async function handleApiKeyChange() {
     setLoading(true);
@@ -20,8 +22,15 @@ const Api = () => {
         try {
           // Fetch the new API key
           const response = await axios.get(
-            `/change_api_key?userId=${user.userId}`
+            `/api/user/change_api_key?apiKey=${user.apiKey}`,
+            {
+              headers: {
+                'Authorization': `Bearer ${token}`, // Replace apiKey with your actual API key
+                'Content-Type': 'application/json',  // You can add this header if needed
+              },
+            }
           );
+          
 
           // Assuming your backend returns the new API key in response.data.api_key
           const newApiKey = response.data.api_key;

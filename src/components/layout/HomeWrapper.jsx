@@ -5,6 +5,7 @@ import { AuthContext } from "@/utils/AppContext";
 
 const HomeWrapper = () => {
   const { serviceData, loadingServiceData } = useContext(AuthContext);
+  // console.log(serviceData)
 
   if (loadingServiceData) {
     return <LayoutLoader />;

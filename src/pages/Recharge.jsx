@@ -38,28 +38,26 @@ const Recharge = ({ maintenanceStatusTrx, maintenanceStatusUpi }) => {
   const [confirmDialog, setConfirmDialog] = useState(true);
   const [open, setOpen] = useState(false);
 
+  console.log(apiKey)
   const fetchExchangeRate = async () => {
     try {
-      const response = await axios.get("/exchange-rate");
+      const response = await axios.get("/api/recharge/exchange-rate");
       const data = await response.data;
       setExchangeRate(data.price);
     } catch (error) {
       console.error("Error fetching exchange rate:", error);
     }
   };
-
-  const fetchQrImage = async () => {
+  const fetchQrImage = async (amount) => {
     try {
-      const response = await axios.get("/get-qr", {
-        responseType: "blob",
-      });
-      const imageUrl = URL.createObjectURL(response.data);
-      setQRImage(imageUrl);
+      const response = await axios.post("/api/recharge/generate-qr", { amount });
+      return response.data.qrCode; // Returning the QR code
     } catch (error) {
-      console.error("Error fetching QR code:", error);
+      throw new Error("Error fetching QR code: " + error.message);
     }
   };
-
+  
+ 
   useEffect(() => {
     if (maintenanceStatusUpi) {
       setIsUpi(false);
@@ -67,18 +65,35 @@ const Recharge = ({ maintenanceStatusTrx, maintenanceStatusUpi }) => {
   }, [maintenanceStatusUpi]);
 
   useEffect(() => {
-    fetchQrImage();
+   
     fetchExchangeRate();
   }, [transactionOk, trxTransactionOk]);
 
-  const handleToggleUpi = () => {
+  
+  
+  
+  const handleToggleUpi = async () => {
     if (!amount.value || amount.error) {
       toast.error("Please enter a valid amount.");
       return;
     }
-    setTransactionOk(true);
+  
+    try {
+      const qrCode = await fetchQrImage(amount.value);
+      setQRImage(qrCode);
+      setTransactionOk(true);
+    } catch (error) {
+      toast.error(error.message || "Failed to generate QR code. Please try again.");
+    }
   };
-
+  
+  useEffect(() => {
+    if (transactionOk || trxTransactionOk) {
+      fetchExchangeRate();
+      fetchQrImage(amount.value).then(qrCode => setQRImage(qrCode));
+    }
+  }, [transactionOk, trxTransactionOk]);
+  
   const handleToggleTrx = () => {
     if (!trxamount.value || trxamount.error) {
       toast.error("Please enter a valid amount.");
@@ -89,45 +104,64 @@ const Recharge = ({ maintenanceStatusTrx, maintenanceStatusUpi }) => {
 
   const handleUpiSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (!transactionId.value) {
       toast.error("Please enter a valid transaction ID.");
       return;
     }
+  
     setIsloading(true);
-    const rechargePromise = new Promise((resolve, reject) => {
-      const rechargeRequest = async () => {
-        try {
-          const response = await axios.get(
-            `/recharge-upi-transaction?transactionId=${transactionId.value}&userId=${user.userId}&email=${user.email}`
-          );
-
-          resolve(response);
-        } catch (error) {
-          reject(error);
-        } finally {
-          setIsloading(false);
-        }
-      };
-
-      rechargeRequest();
-    });
-
-    await toast.promise(rechargePromise, {
-      loading: "Checking Transaction...",
-      success: (r) => {
-        fetchBalance(apiKey);
-        handleCancel();
-        return r.data.message;
-      },
-      error: (error) => {
+    
+    // Create a new promise that resolves/rejects based on the API response
+    const rechargePromise = new Promise(async (resolve, reject) => {
+      try {
+        // Send a POST request with the necessary data
+        const response = await axios.post("/api/recharge/upi", {
+          transactionId: transactionId.value,
+          userId: user.userId, // Extracted from context or state
+          email: user.email,   // Extracted from context or state
+          amount,              // Amount entered by the user
+        });
+  
+        // Resolve the promise if the recharge was successful
+        toast.success(
+          response?.data?.message || "Recharge was successful. Thank you!",
+          {
+            autoClose: 5000, // Set duration to 3 seconds
+          }
+        );
+        resolve(response); // Resolve the promise after success
+      } catch (error) {
+        // Reject the promise if there was an error
         const errorMessage =
-          error.response?.data?.error ||
-          "Invalid Transaction Id. Please try again.";
-        return errorMessage;
-      },
+          error.response?.data?.message || "Failed to process recharge.";
+        toast.error(errorMessage);
+        reject(error); // Reject the promise in case of error
+      } finally {
+        setIsloading(false);
+      }
     });
+  
+    // Now the rechargePromise is resolved or rejected, you can safely chain the `.then`
+   rechargePromise.then(async (response) => {
+      console.log('Fetching balance with API key:', apiKey);
+      await fetchBalance(apiKey); // Ensure this works as expected
+      handleCancel();
+      return response;
+    });
+  
+    // await toast.promise(enhancedRechargePromise, {
+    //   loading: "Checking Transaction...",
+    //   success: (r) => r.data.message,
+    //   // error: (error) => {
+    //   //   const errorMessage =
+    //   //     error.response?.data?.error ||
+    //   //     "Invalid Transaction Id. Please try again.";
+    //   //   return errorMessage;
+    //   // },
+    // });
   };
+  
 
   const handleTrxSubmit = async (e) => {
     e.preventDefault();
@@ -141,7 +175,7 @@ const Recharge = ({ maintenanceStatusTrx, maintenanceStatusUpi }) => {
       const rechargeRequest = async () => {
         try {
           const response = await axios.get(
-            `/recharge-trx-transaction?address=${user.trxAddress}&hash=${trxTransactionId.value}&userId=${user.userId}&exchangeRate=${exchangeRate}&email=${user.email}`
+           `/api/recharge/trx?transactionHash=${trxTransactionId.value}&userId=${user.userId}&email=${user.email}`
           );
 
           resolve(response);

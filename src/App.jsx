@@ -5,6 +5,8 @@ import { LayoutLoader } from "@/components/layout/Loaders";
 import axios from "axios";
 import { AuthContext } from "./utils/AppContext";
 import HomeWrapper from "@/components/layout/HomeWrapper";
+import VerifyEmail from "./pages/VerifyEmail";
+import EmailVerify from "./pages/EmailVerify";
 const Login = lazy(() => import("@/pages/Login"));
 const SignUp = lazy(() => import("@/pages/SignUp"));
 const ChangePassword = lazy(() => import("@/pages/ChangePassword"));
@@ -19,13 +21,13 @@ const About = lazy(() => import("@/pages/About"));
 const CheckOtp = lazy(() => import("@/pages/CheckOtp"));
 
 function App() {
-  axios.defaults.baseURL = "http://localhost:5173";
+  axios.defaults.baseURL = "http://localhost:3000/";
   axios.defaults.withCredentials = true;
   const { user, setMaintainance, isGoogleLogin } = useContext(AuthContext);
   const [isMaintenance, setIsMaintenance] = useState(false);
 
   const fetchMaintenance = async () => {
-    const response = await axios.get("/maintainance-check");
+    const response = await axios.get("/system/maintenance");
     setMaintainance(response.data.maintainance);
     setIsMaintenance(response.data.maintainance);
   };
@@ -139,6 +141,12 @@ function App() {
                   </ProtectRoute>
                 }
               />
+              {/* <Route path="/verify-email?token=" element={<VerifyEmail />} /> */}
+              <Route path="/verify-email" element={<VerifyEmail />} />
+              <Route path="/email-verify" element={<EmailVerify />} />
+
+              <Route path="/*" element={<NotFound />} />
+               {/* <Route path="/api/user/verifyEmail/:token" element={<VerifyEmail/>} /> */}
               <Route path="/*" element={<NotFound />} />
             </>
           )}

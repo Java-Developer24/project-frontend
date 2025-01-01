@@ -12,8 +12,9 @@ const RechargeWrapper = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `/get-recharge-maintenance?rechargeType=upi`
+        `/api/recharge/get-recharge-maintenance?rechargeType=upi`
       );
+      console.log(response.data)
       setMaintenanceStatusUpi(response.data.maintenance);
     } catch (error) {
       console.error("Error fetching maintenance status:", error);
@@ -26,7 +27,7 @@ const RechargeWrapper = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `/get-recharge-maintenance?rechargeType=trx`
+        `/api/recharge/get-recharge-maintenance?rechargeType=trx`
       );
       setMaintenanceStatusTrx(response.data.maintenance);
     } catch (error) {

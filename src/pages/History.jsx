@@ -24,7 +24,10 @@ const History = () => {
   const [rechargeHistory, setRechargeHistory] = useState([]);
   const [transactionHistory, setTransactionHistory] = useState([]);
   const { user } = useContext(AuthContext);
+ 
   const userId = user.userId;
+  
+ 
 
   // State for pagination
   const [rechargeLimit, setRechargeLimit] = useState(10);
@@ -33,19 +36,29 @@ const History = () => {
   const [transactionCurrentPage, setTransactionCurrentPage] = useState(1);
 
   const [tranFilter, setTranFilter] = useState("All");
+  const token = localStorage.getItem("paidsms-token");
 
-  console.log(tranFilter);
+
+  
 
   useEffect(() => {
     const fetchHistory = async () => {
       try {
         const [rechargeResponse, transactionResponse] = await Promise.all([
-          axios.get(`/recharge-history?userId=${userId}`),
-          axios.get(`/transaction-history?userId=${userId}`),
+          axios.get(`/api/history/recharge-history?userId=${userId}`,{
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },}),
+          axios.get(`/api/history/transaction-history?userId=${userId}`,{
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },}),
         ]);
 
-        setRechargeHistory(rechargeResponse.data || []); // Ensure it's an array
-        setTransactionHistory(transactionResponse.data || []); // Ensure it's an array
+        setRechargeHistory(rechargeResponse.data.data || []); // Ensure it's an array
+        setTransactionHistory(transactionResponse.data.data || []); // Ensure it's an array
       } catch (error) {
         toast.error("Failed to fetch history data");
       }
@@ -61,7 +74,7 @@ const History = () => {
     }
 
     const groupedData = data.reduce((acc, entry) => {
-      if (!acc[entry.id]) {
+      if (!acc[entry._id]) {
         acc[entry.id] = [];
       }
       acc[entry.id].push(entry);
@@ -70,25 +83,26 @@ const History = () => {
 
     const preparedData = Object.values(groupedData).map((entries) => {
       const finishedEntries = entries.filter(
-        (entry) => entry.status === "FINISHED"
+        (entry) => entry.status === "Success"
       );
       const cancelledEntries = entries.filter(
-        (entry) => entry.status === "CANCELLED"
+        (entry) => entry.status === "Cancelled"
       );
 
       const displayEntry =
         cancelledEntries.length > 0
           ? cancelledEntries[0]
-          : finishedEntries.find((entry) => entry.otp !== null) ||
-            finishedEntries[0];
+          : finishedEntries.find((entry) => entry.otps && entry.otps.length > 0) ||
+          finishedEntries[0];
 
       return {
         ...displayEntry,
         otps:
-          finishedEntries
-            .filter((entry) => entry.otp)
-            .map((entry) => entry.otp)
-            .join(`<br><br>`) || "-",
+  finishedEntries
+    .filter((entry) => entry.otps && entry.otps.length > 0)  // Make sure otps is non-empty
+    .map((entry) => entry.otps[0].message)  // Assuming you want the OTP message
+    .join(`<br><br>`) || "-",
+
       };
     });
 
@@ -99,25 +113,20 @@ const History = () => {
 
   if (tranFilter === "Success") {
     filteredTransactionHistory = filteredTransactionHistory.filter(
-      (entry) => entry.status === "FINISHED"
+      (entry) => entry.status === "Success"
     );
   } else if (tranFilter === "Cancelled") {
     filteredTransactionHistory = filteredTransactionHistory.filter(
-      (entry) => entry.status === "CANCELLED"
+      (entry) => entry.status === "Cancelled"
     );
   }
 
-  // Sort transactions by date and time
-  const sortedFilteredTransactionHistory = filteredTransactionHistory
-    .sort((a, b) =>
-      moment(b.date_time, "MM/DD/YYYYTHH:mm:ss A").isBefore(
-        moment(a.date_time, "MM/DD/YYYYTHH:mm:ss A")
-      )
-        ? 1
-        : -1
-    )
-    .reverse();
-
+  // // Sort transactions by date and time
+  const sortedFilteredTransactionHistory = filteredTransactionHistory.sort((a, b) =>
+    moment(b.date).isBefore(moment(a.date)) ? 1 : -1
+  );
+  
+  
   // Pagination handlers for Recharge History
   const handleRechargeLimitChange = (value) => {
     setRechargeLimit(Number(value));
@@ -176,16 +185,40 @@ const History = () => {
 
   const filteredData = selectedTabs ? rechargeData : transactionData;
 
-  // Get date range
+
   const getDateRange = (data) => {
     if (data.length === 0) return "No data available";
-    const dates = data.map((entry) =>
-      moment(entry.date_time, "MM/DD/YYYYTHH:mm:ss A")
-    );
+    
+    const dates = data.map((entry) => {
+      const date = entry.date || entry.date_time; // Either date or date_time
+      
+      // Check if the date is in ISO 8601 format or custom format and parse accordingly
+      if (moment(date, "YYYY-MM-DDTHH:mm:ss.SSSZ", true).isValid()) {
+        return moment(date); // ISO format
+      } else {
+        return moment(date, "DD/MM/YYYYTHH:mm A"); // Custom format (23/10/1999T03:43 PM)
+      }
+    });
+  
     const minDate = moment.min(dates);
     const maxDate = moment.max(dates);
-    return `${minDate.format("DD/MM/YY")} - ${maxDate.format("DD/MM/YY")}`;
+  
+    return `${minDate.format("YYYY/MM/DD")} - ${maxDate.format("YYYY/MM/DD")}`;
   };
+  
+  // // Get date range
+  // const getDateRange = (data) => {
+  //   if (data.length === 0) return "No data available";
+  //   const dates = data.map((entry) =>
+  //     moment(entry.date, "YYYY/MM/DDTHH:mm:ss A") // Using "date" field from backend
+  //   );
+  //   const minDate = moment.min(dates);
+  //   const maxDate = moment.max(dates);
+  //   return `${minDate.format("YYYY/MM/DD")} - ${maxDate.format("YYYY/MM/DD")}`;
+  // };
+
+  
+
 
   return (
     <div>
@@ -269,6 +302,7 @@ const History = () => {
               <div className="hidden md:block">
                 <NumberTable
                   data={transactionData}
+                  
                   currentPage={transactionCurrentPage}
                   limit={transactionLimit}
                 />
@@ -339,8 +373,8 @@ const History = () => {
   );
 };
 const statusMap = {
-  CANCELLED: "REFUNDED",
-  FINISHED: "FINISHED",
+  CANCELLED: "Cancelled",
+  Success: "Success",
 };
 const wrapStyle = {
   wordBreak: "break-word",
@@ -370,20 +404,22 @@ const NumberTable = ({ data, currentPage, limit }) => {
               <td className="p-2 font-normal text-sm">
                 {(currentPage - 1) * limit + index + 1}
               </td>
-              <td className="p-2 font-normal text-sm">{entry.id}</td>
+              <td className="p-2 font-normal text-sm">{entry._Id}</td>
               <td className="p-2 font-normal text-sm">{entry.number}</td>
               <td
                 className="p-2 font-normal text-sm max-w-[400px]"
                 style={wrapStyle}
               >
-                <span dangerouslySetInnerHTML={{ __html: entry.otps }} />
+                <span dangerouslySetInnerHTML={{ __html: entry.otps[0].message }} />
               </td>
               <td className="p-2 font-normal text-sm">
-                {moment(entry.date_time, "MM/DD/YYYYTHH:mm:ss A").format(
-                  "DD/MM/YYYY hh:mm:ss A"
-                )}
+              {moment(entry.date, "YYYY/MM/DDTHH:mm:ss A").isValid()
+    ? moment(entry.date, "YYYY/MM/DDTHH:mm:ss A").format(
+        "YYYY/MM/DD hh:mm:ss A"
+      )
+    : "Invalid Date"}
               </td>
-              <td className="p-2 font-normal text-sm">{entry.service}</td>
+              <td className="p-2 font-normal text-sm">{entry.serviceName}</td>
               <td className="p-2 font-normal text-sm">{entry.server}</td>
               <td className="p-2 font-normal text-sm">{entry.price}</td>
               <td className="p-2 font-normal text-sm text-teal-400">
@@ -462,7 +498,8 @@ const NumberTabelMob = ({ data, currentPage, limit }) => {
                   className="border-b-2 border-[#949494] p-3"
                   style={wrapStyle}
                 >
-                  {item.id}
+                  
+                  {item._id}
                 </td>
               </tr>
               <tr>
@@ -484,7 +521,7 @@ const NumberTabelMob = ({ data, currentPage, limit }) => {
                   className="border-b-2 border-[#949494] p-3"
                   style={wrapStyle}
                 >
-                  <span dangerouslySetInnerHTML={{ __html: item.otps }} />
+                  <span dangerouslySetInnerHTML={{ __html: item.otps  }} />
                 </td>
               </tr>
               <tr>
@@ -495,9 +532,11 @@ const NumberTabelMob = ({ data, currentPage, limit }) => {
                   className="border-b-2 border-[#949494] p-3"
                   style={wrapStyle}
                 >
-                  {moment(item.date_time, "MM/DD/YYYYTHH:mm:ss A").format(
-                    "DD/MM/YYYY hh:mm:ss A"
-                  )}
+                   {moment(item.date, "YYYY/MM/DDTHH:mm:ss A").isValid()
+    ? moment(item.date, "YYYY/MM/DDTHH:mm:ss A").format(
+        "YYYY/MM/DD hh:mm:ss A"
+      )
+    : "Invalid Date"}
                 </td>
               </tr>
               <tr>
@@ -508,7 +547,7 @@ const NumberTabelMob = ({ data, currentPage, limit }) => {
                   className="border-b-2 border-[#949494] p-3"
                   style={wrapStyle}
                 >
-                  {item.service}
+                  {item.serviceName}
                 </td>
               </tr>
               <tr>
