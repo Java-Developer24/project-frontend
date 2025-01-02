@@ -70,11 +70,17 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const fetchServiceData = async () => {
+  const fetchServiceData = async (userId) => {
     try {
       setLoadingServiceData(true);
-      const response = await axios.get("/api/service/getServices");
+      
+      // const response = await axios.get("/api/service/get-service-server-data");
+      const response = await axios.get(
+        `/api/service/get-service-server-data${userId ? `?userId=${userId}` : ""}`
+      );
+      
       setServiceData(response.data);
+      
     } catch (error) {
       console.error("Error fetching service data:", error.response?.data?.error);
     } finally {
@@ -92,6 +98,7 @@ export function AuthProvider({ children }) {
       // Decode the token to extract user information
       const decodedToken = jwtDecode(token);
       const userId = decodedToken.id;
+      console.log(userId)
       const googleId = decodedToken.id; // Handle Google login ID if available
   
       // Validate the token against the backend
@@ -110,8 +117,8 @@ export function AuthProvider({ children }) {
             }
           });
   
-          // Optionally fetch service data if needed
-          fetchServiceData();
+         // Fetch service data after login
+         fetchServiceData(userIdOrGoogleId); // Pass userIdOrGoogleId here
         } else {
           // Token validation failed, handle logged-out state
           handleLoggedOutState();
@@ -152,7 +159,7 @@ export function AuthProvider({ children }) {
         });
   
         // Optionally fetch service data after login
-        fetchServiceData();
+        fetchServiceData(userIdOrGoogleId);
       } else {
         // Handle token validation failure if needed
       }

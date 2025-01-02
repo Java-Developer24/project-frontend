@@ -23,11 +23,12 @@ const GetNumber = () => {
   const fetchOrdersAndTransactions = async () => {
     try {
       const [ordersResponse, transactionsResponse] = await Promise.all([
-        axios.get(`/orders?userId=${user.userId}`),
-        axios.get(`/transaction-history?userId=${user.userId}`),
+        axios.get(`/api/user/orders?userId=${user.userId}`),
+        // axios.get(`/api/history/transaction-history?userId=${user.userId}`),
       ]);
 
       setOrders(ordersResponse.data);
+      console.log(ordersResponse.data)
       setTransactions(transactionsResponse.data);
       setLoading(false);
     } catch (error) {
@@ -121,7 +122,7 @@ const GetNumber = () => {
       const orderCancelRequest = async () => {
         try {
           await axios.get(
-            `/number-cancel?api_key=${apiKey}&id=${numberId}&server=${server}`
+            `/api/service/number-cancel?api_key=${apiKey}&id=${numberId}&server=${server}`
           );
           resolve();
         } catch (error) {
@@ -197,11 +198,11 @@ const GetNumber = () => {
       for (const order of orders) {
         const { server, numberId } = order;
         await axios.get(
-          `/get-otp?api_key=${apiKey}&server=${server}&id=${numberId}`
+          `/api/service/get-otp?api_key=${apiKey}&server=${server}&id=${numberId}`
         );
 
         const transactionsResponse = await axios.get(
-          `/transaction-history?userId=${user.userId}`
+          // `/api/history/transaction-history?userId=${user.userId}`
         );
         setTransactions(transactionsResponse.data);
       }
@@ -220,7 +221,7 @@ const GetNumber = () => {
         handleGetOtp(orders);
       }, 5000);
     }
-
+console.log(orders)
     return () => clearInterval(interval);
   }, [orders, otpError]); // Depend on otpError to manage the interval
 

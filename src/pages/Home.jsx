@@ -17,6 +17,7 @@ const Home = ({ serviceData }) => {
     setSearchQuery(e.target.value.toLowerCase());    
     setSelectedService(null);
   };
+  console.log(serviceData)
 
   const handleServiceClick = (service) => {
     if (!service || !service.name) {
@@ -55,7 +56,7 @@ const Home = ({ serviceData }) => {
       const getNumberRequest = async () => {
         try {
           await axios.get(
-            `/get-number?api_key=${apiKey}&servicecode=${service.name}&server=${serverNumber}`
+            `/api/service/get-number?api_key=${apiKey}&servicecode=${service.name}&server=${serverNumber}`
           );
           resolve(); // Resolve the promise on success
         } catch (error) {
@@ -119,7 +120,7 @@ const Home = ({ serviceData }) => {
                   .map((server) => (
                     <button
                       className="bg-[#282828] py-4 px-3 md:px-5 flex mb-1 w-full items-center justify-between rounded-lg"
-                      key={server._id || server.serverNumber}
+                      key={server._id || servers.serverNumber}
                       disabled={loading}
                       onClick={() => handleServiceButtonClick(server.serverNumber)}
                     >

@@ -373,7 +373,7 @@ const History = () => {
   );
 };
 const statusMap = {
-  CANCELLED: "Cancelled",
+  Cancelled: "Cancelled",
   Success: "Success",
 };
 const wrapStyle = {
