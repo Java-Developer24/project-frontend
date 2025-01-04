@@ -24,11 +24,12 @@ const GetNumber = () => {
     try {
       const [ordersResponse, transactionsResponse] = await Promise.all([
         axios.get(`/api/user/orders?userId=${user.userId}`),
-        // axios.get(`/api/history/transaction-history?userId=${user.userId}`),
+        axios.get(`/api/history/transaction-history-user?userId=${user.userId}`),
       ]);
-
+  
+      console.log('Fetched Transactions:', transactionsResponse.data); // Log here
+  
       setOrders(ordersResponse.data);
-      console.log(ordersResponse.data)
       setTransactions(transactionsResponse.data);
       setLoading(false);
     } catch (error) {
@@ -36,6 +37,7 @@ const GetNumber = () => {
       setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     if (user) {
@@ -43,21 +45,32 @@ const GetNumber = () => {
     }
   }, [user]);
 
-  const getOTPFromTransaction = (numberId) => {
-    const relatedTransactions = transactions.filter(
-      (transaction) => transaction.id === numberId
-    );
 
-    if (relatedTransactions.length === 0) {
-      return ["Waiting for SMS"];
-    }
 
-    const otpList = relatedTransactions
-      .map((transaction) => transaction.otp)
-      .filter((otp) => otp !== null);
+  const getOTPFromTransaction = (number) => { // Use 'number' here
+        console.log('Fetching OTP for number:', number);
+        const relatedTransactions = transactions.filter(
+            (transaction) => transaction.number === number // Compare numbers
+        );
+        console.log('Related Transactions:', relatedTransactions);
 
-    return otpList.length > 0 ? otpList : ["Waiting for SMS"];
-  };
+        if (relatedTransactions.length === 0) {
+            return ["Waiting for SMS"];
+        }
+
+        const otpList = relatedTransactions
+            .map((transaction) => transaction.otps)
+            .filter((otps) => otps && otps.length > 0);
+
+        if (otpList.length === 0) {
+            return ["Waiting for SMS"];
+        }
+
+        return otpList.flatMap((otpArray) => otpArray.map((otp) => otp.message));
+    };
+  
+
+  
 
   const calculateRemainingTime = (expirationTime) => {
     const now = new Date();
@@ -152,7 +165,7 @@ const GetNumber = () => {
     });
   };
 
-  const handleBuyAgain = async (server, service, orderId) => {
+  const handleBuyAgain = async (server, service, orderId,otpType) => {
     const servicecode = service
       .toLowerCase()
       .replace(/\s+/g, "")
@@ -163,7 +176,7 @@ const GetNumber = () => {
       const buyAgainRequest = async () => {
         try {
           await axios.get(
-            `/get-number?api_key=${apiKey}&servicecode=${servicecode}&server=${server}`
+            `/api/service/get-number?api_key=${apiKey}&servicecode=${servicecode}&server=${server}&otpType=${otpType}`
           );
 
           await fetchOrdersAndTransactions();
@@ -195,24 +208,32 @@ const GetNumber = () => {
 
   const handleGetOtp = async (orders) => {
     try {
-      for (const order of orders) {
-        const { server, numberId } = order;
-        await axios.get(
-          `/api/service/get-otp?api_key=${apiKey}&server=${server}&id=${numberId}`
-        );
+        const updatedTransactions = []; // Store updated transactions
 
+        for (const order of orders) {
+            const { server, numberId, otpType } = order; // Use 'number' here
+            const response = await axios.get(
+                `/api/service/get-otp?api_key=${apiKey}&server=${server}&id=${numberId}` // Use 'number' here
+            );
+
+            // Assuming your backend returns updated transaction data for the specific number
+            if (response.data && response.data.length > 0) {
+              updatedTransactions.push(...response.data);
+            }
+        }
+
+        // Fetch the latest transactions
         const transactionsResponse = await axios.get(
-          // `/api/history/transaction-history?userId=${user.userId}`
+            `/api/history/transaction-history-user?userId=${user.userId}`
         );
         setTransactions(transactionsResponse.data);
-      }
-      setOtpError(false); // Reset error state on success
+        setOtpError(false);
     } catch (error) {
-      console.error("Error fetching OTP", error);
-      setOtpError(true); // Set error state on failure
+        console.error("Error fetching OTP", error);
+        setOtpError(true);
     }
-  };
-
+};
+  
   useEffect(() => {
     let interval;
 
@@ -244,8 +265,8 @@ console.log(orders)
         </div>
       ) : (
         orders.map((order) => {
-          const hasOtp = getOTPFromTransaction(order.numberId).some(
-            (otp) => otp !== "Waiting for SMS"
+          const otps = getOTPFromTransaction(order.numberId); // Get the OTPs for the order
+          const hasOtp = otps.some((otp) => otp !== "Waiting for SMS"
           );
 
           return (
@@ -303,20 +324,17 @@ console.log(orders)
                 </div>
                 <div className="w-full flex bg-[#444444] border-2 border-[#888888] rounded-2xl items-center justify-center max-h-[100px] overflow-y-scroll hide-scrollbar">
                   <div className="w-full h-full flex flex-col items-center">
-                    {getOTPFromTransaction(order.numberId).map(
-                      (otp, index, arr) => (
-                        <React.Fragment key={index}>
-                          <div className="bg-transparent py-4 px-5 flex w-full items-center justify-center">
-                            <h3 className="font-normal text-sm">{otp}</h3>
-                          </div>
-                          {index < arr.length - 1 && (
-                            <hr className="border-[#888888] border w-full" />
-                          )}
-                        </React.Fragment>
-                      )
-                    )}
+                    {otps.map((otpMessage, index) => (
+                      <React.Fragment key={index}>
+                        <div className="bg-transparent py-4 px-5 flex w-full items-center justify-center">
+                          <h3 className="font-normal text-sm">{otpMessage}</h3>
+                        </div>
+                        {index < otps.length - 1 && <hr className="border-[#888888] border w-full" />}
+                      </React.Fragment>
+                    ))}
                   </div>
                 </div>
+
                 <div className="w-full flex rounded-2xl items-center justify-center mb-2">
                   <div className="bg-transparent pt-4 flex w-full items-center justify-center gap-4">
                     <Button
@@ -340,7 +358,7 @@ console.log(orders)
                     <Button
                       className="py-2 px-6 rounded-full border-2 border-primary font-normal bg-transparent text-primary hover:bg-primary hover:text-white transition-colors duration-200 ease-in-out"
                       onClick={() =>
-                        handleBuyAgain(order.server, order.service, order._id)
+                        handleBuyAgain(order.server, order.service, order._id,order.otpType)
                       }
                       isLoading={loadingBuyAgain[order._id]}
                     >

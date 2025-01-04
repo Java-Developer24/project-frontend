@@ -51,12 +51,16 @@ const Home = ({ serviceData }) => {
       return;
     }
     const service = selectedService;
+    const selectedServer = selectedService.servers.find(
+      (server) => server.serverNumber === serverNumber
+    );
+    const otpType = selectedServer?.otp || ""; // Extract the OTP type from the selected server
     setLoading(true);
     const getNumberPromise = new Promise((resolve, reject) => {
       const getNumberRequest = async () => {
         try {
           await axios.get(
-            `/api/service/get-number?api_key=${apiKey}&servicecode=${service.name}&server=${serverNumber}`
+            `/api/service/get-number?api_key=${apiKey}&servicecode=${service.name}&server=${serverNumber}&otpType=${otpType}`
           );
           resolve(); // Resolve the promise on success
         } catch (error) {

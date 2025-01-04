@@ -27,7 +27,7 @@ function App() {
   const [isMaintenance, setIsMaintenance] = useState(false);
 
   const fetchMaintenance = async () => {
-    const response = await axios.get("/system/maintenance");
+    const response = await axios.get("/api/service/maintenance");
     setMaintainance(response.data.maintainance);
     setIsMaintenance(response.data.maintainance);
   };

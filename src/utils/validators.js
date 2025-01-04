@@ -1,5 +1,5 @@
 import { isValidEmail } from "6pp";
-
+import axios from "axios";
 export const emailValidator = (email) => {
   if (!isValidEmail(email))
     return { isValid: false, errorMessage: "Email is Invalid" };
@@ -30,9 +30,12 @@ export const confirmPasswordValidator = (confirmPassword, password) => {
   return { isValid: true, errorMessage: "" };
 };
 
+// Amount Validator with Direct Fetch of Minimum UPI Amount
+
 export const amountValidator = (amount) => {
-  if (!amount || amount < 50) {
-    return { isValid: false, errorMessage: "Minimum amount is 50\u20B9" };
+  
+if (!amount || amount < 10) {
+    return { isValid: false, errorMessage: `Minimum amount is 10\u20B9` };
   }
   return { isValid: true, errorMessage: "" };
 };

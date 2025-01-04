@@ -37,7 +37,24 @@ const Recharge = ({ maintenanceStatusTrx, maintenanceStatusUpi }) => {
   const [QRImage, setQRImage] = useState(null);
   const [confirmDialog, setConfirmDialog] = useState(true);
   const [open, setOpen] = useState(false);
-
+  const [minUpiAmount,setMinUpiAmount ]=useState("")
+  
+  useEffect(() => {
+    const fetchMinUpiAmount = async () => {
+      try {
+        const response = await axios.get("/api/config/min-upi-amount"); // Backend endpoint to get the current min UPI amount
+        const { minUpiAmount } = response.data;
+        setMinUpiAmount(minUpiAmount); // Store the min amount in state
+      } catch (error) {
+        toast.error("Failed to fetch minimum UPI amount.");
+        console.error("Error fetching min UPI amount:", error);
+      }
+    };
+  
+    fetchMinUpiAmount();
+  }, []);
+  
+  
   console.log(apiKey)
   const fetchExchangeRate = async () => {
     try {
@@ -313,12 +330,12 @@ const Recharge = ({ maintenanceStatusTrx, maintenanceStatusUpi }) => {
                     htmlFor="amount"
                     className="block text-sm text-[#9d9d9d] font-normal py-2"
                   >
-                    Amount
+                     Amount (Min: ₹{minUpiAmount}) {/* Displaying the minimum UPI amount */}
                   </Label>
                   <Input
                     id="amount"
                     type="number"
-                    placeholder="Minimum 50.."
+                    placeholder={`Minimum ${minUpiAmount || '...'} UPI Amount`} 
                     className="w-full h-12 pl-3 rounded-lg no-arrows text-[#9d9d9d] !placeholder-[#9d9d9d] bg-transparent border-[#e0effe] focus:border-none"
                     required
                     value={amount.value}
@@ -507,7 +524,7 @@ const Recharge = ({ maintenanceStatusTrx, maintenanceStatusUpi }) => {
             <AlertDialogHeader>
               <AlertDialogTitle></AlertDialogTitle>
               <AlertDialogDescription className="text-white">
-                Minimum amount is 50₹, Otherwise no refund.
+                Minimum amount is ₹{minUpiAmount}, Otherwise no refund.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
