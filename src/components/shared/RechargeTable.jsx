@@ -12,6 +12,7 @@ export const RechargeTable = ({ data, currentPage, limit }) => {
             <th className="p-2 font-normal">Payment Type</th>
             <th className="p-2 font-normal">Date & Time</th>
             <th className="p-2 font-normal">Status</th>
+            
           </tr>
         </thead>
         <tbody>

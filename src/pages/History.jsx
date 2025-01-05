@@ -206,18 +206,7 @@ const History = () => {
     return `${minDate.format("YYYY/MM/DD")} - ${maxDate.format("YYYY/MM/DD")}`;
   };
   
-  // // Get date range
-  // const getDateRange = (data) => {
-  //   if (data.length === 0) return "No data available";
-  //   const dates = data.map((entry) =>
-  //     moment(entry.date, "YYYY/MM/DDTHH:mm:ss A") // Using "date" field from backend
-  //   );
-  //   const minDate = moment.min(dates);
-  //   const maxDate = moment.max(dates);
-  //   return `${minDate.format("YYYY/MM/DD")} - ${maxDate.format("YYYY/MM/DD")}`;
-  // };
 
-  
 
 
   return (
@@ -395,7 +384,9 @@ const NumberTable = ({ data, currentPage, limit }) => {
             <th className="p-2 font-normal">Service</th>
             <th className="p-2 font-normal">Server</th>
             <th className="p-2 font-normal">Price</th>
+            <th className="p-2 font-normal">Reason</th>
             <th className="p-2 font-normal">Status</th>
+            
           </tr>
         </thead>
         <tbody>
@@ -422,9 +413,11 @@ const NumberTable = ({ data, currentPage, limit }) => {
               <td className="p-2 font-normal text-sm">{entry.serviceName}</td>
               <td className="p-2 font-normal text-sm">{entry.server}</td>
               <td className="p-2 font-normal text-sm">{entry.price}</td>
+              <td className="p-2 font-normal text-sm">{entry.reason}</td>
               <td className="p-2 font-normal text-sm text-teal-400">
                 {statusMap[entry.status] || ""}
               </td>
+             
             </tr>
           ))}
         </tbody>
@@ -573,11 +566,23 @@ const NumberTabelMob = ({ data, currentPage, limit }) => {
                 </td>
               </tr>
               <tr>
+                <td className="border-b-2 border-[#949494] p-3 px-5 text-[#959595]">
+                  Reason
+                </td>
+                <td
+                  className="border-b-2 border-[#949494] p-3"
+                  style={wrapStyle}
+                >
+                  {item.reason}
+                </td>
+              </tr>
+              <tr>
                 <td className="p-3 px-5 text-[#959595]" style={wrapStyle}>
                   Status
                 </td>
                 <td className="p-3">{statusMap[item.status] || ""}</td>
               </tr>
+              
             </tbody>
           </table>
         </div>
