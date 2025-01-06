@@ -1,12 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom"; // Ensure correct import
+import { useNavigate, useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { AuthContext } from "@/utils/AppContext";
 
 const VerifyEmail = () => {
-  const [searchParams] = useSearchParams(); // For extracting the token from the URL
+  const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
-
   const [message, setMessage] = useState("Verifying your email...");
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
@@ -15,7 +14,6 @@ const VerifyEmail = () => {
   useEffect(() => {
     const verifyEmail = async () => {
       try {
-        // Check if token exists
         if (!token) {
           setMessage("No token provided. Please check the verification link.");
           toast.error("Invalid verification link.");
@@ -23,23 +21,20 @@ const VerifyEmail = () => {
           return;
         }
 
-        // API call to verify email
         const response = await fetch(
           `http://localhost:3000/api/auth/verify-email?token=${token}`,
           { method: "GET" }
         );
 
         const data = await response.json();
-        console.log(data)
 
         if (response.ok) {
           setMessage("Email verified successfully! Redirecting...");
           toast.success(data.message || "Your email has been successfully verified.");
 
-          // Automatically log in the user
           if (data.jwtToken) {
             login(data.jwtToken);
-            setTimeout(() => navigate("/"), 3000); // Redirect after success
+            setTimeout(() => navigate("/"), 3000);
           }
         } else {
           setMessage(data.message || "Invalid or expired token. Please try again.");
@@ -53,22 +48,22 @@ const VerifyEmail = () => {
       }
     };
 
-    verifyEmail(); // Trigger email verification
+    verifyEmail();
   }, [token, navigate, login]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-indigo-500 to-blue-500 text-white">
-      <div className="bg-white text-gray-800 p-8 rounded-xl shadow-md max-w-md w-full text-center">
-        <h1 className="text-2xl font-bold mb-4 text-indigo-600">
+    <div className="min-h-screen flex items-center justify-center bg-black text-white">
+      <div className="bg-[#121315] p-8 rounded-xl shadow-lg max-w-md w-full text-center border border-[#1b1d21] animate-in fade-in-0 slide-in-from-bottom-4 duration-700">
+        <h1 className="text-2xl font-bold mb-4 text-primary animate-in slide-in-from-left duration-700">
           Email Verification
         </h1>
         {isLoading ? (
-          <div className="flex flex-col items-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-indigo-600 border-opacity-50 mb-4"></div>
-            <p className="text-gray-700">Please wait while we verify your email...</p>
+          <div className="flex flex-col items-center animate-in fade-in-0 duration-700">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-primary border-opacity-50 mb-4"></div>
+            <p className="text-gray-400">Please wait while we verify your email...</p>
           </div>
         ) : (
-          <p className="text-gray-700 font-medium">{message}</p>
+          <p className="text-gray-400 font-medium animate-in fade-in-0 duration-700">{message}</p>
         )}
       </div>
     </div>
