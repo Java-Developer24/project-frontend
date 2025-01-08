@@ -263,7 +263,7 @@ const Login = () => {
       login(token); // Assuming login is a function that saves the token
   
       toast.success("Login successful!", {
-        autoClose: 3000, // The toast will remain open for 3 seconds
+        autoClose: 7000, // The toast will remain open for 3 seconds
       });
       navigate("/");
   

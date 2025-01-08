@@ -18,19 +18,10 @@ const Footer = () => {
   return (
     <footer className="bg-[#121315] text-white py-8 mt-auto animate-in fade-in-0 duration-1000">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Logo and Description */}
-          <div className="col-span-1 md:col-span-1 animate-in slide-in-from-left duration-700">
-            <Link to="/" className="flex items-center mb-4 hover:opacity-80 transition-opacity">
-              <img src={Logo} alt="PaidSMS Logo" className="w-[100px]" />
-            </Link>
-            <p className="text-gray-400 text-sm">
-              Your trusted platform for SMS verification services. Get virtual numbers instantly for all your verification needs.
-            </p>
-          </div>
-
+        <div className="grid grid-cols-1 md:grid-cols-2 w-full gap-20  ">
+          
           {/* Quick Links */}
-          <div className="animate-in slide-in-from-bottom duration-700 delay-100">
+          <div className="animate-in slide-in-from-bottom duration-700 delay-100 pl-40 ml-20">
             <h3 className="text-lg font-semibold mb-4 text-primary">Quick Links</h3>
             <ul className="space-y-2">
               <li>
@@ -43,7 +34,7 @@ const Footer = () => {
                   About Us
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link 
                   to="/api" 
                   className="text-gray-400 hover:text-primary transition-all duration-300 hover:translate-x-1 inline-block"
@@ -60,12 +51,12 @@ const Footer = () => {
                 >
                   Transaction History
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
 
           {/* Support */}
-          <div className="animate-in slide-in-from-bottom duration-700 delay-200">
+          <div className="animate-in slide-in-from-bottom duration-700 delay-200 ml-20 ">
             <h3 className="text-lg font-semibold mb-4 text-primary">Support</h3>
             <ul className="space-y-2">
               <li>
@@ -94,7 +85,7 @@ const Footer = () => {
           </div>
 
           {/* Payment Methods */}
-          <div className="animate-in slide-in-from-bottom duration-700 delay-300">
+          {/* <div className="animate-in slide-in-from-bottom duration-700 delay-300">
             <h3 className="text-lg font-semibold mb-4 text-primary">Payment Methods</h3>
             <div className="flex gap-4">
               <div className="bg-[#1e1e1e] p-3 rounded-lg hover:bg-[#282828] transition-all duration-300 hover:scale-105">
@@ -104,7 +95,7 @@ const Footer = () => {
                 <img src="https://images.gizbot.com/img/2024/08/upi2-1723465193.jpeg" alt="UPI" className="w-15 h-10" />
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* Bottom Bar */}

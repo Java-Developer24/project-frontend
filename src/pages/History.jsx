@@ -383,8 +383,9 @@ const NumberTable = ({ data, currentPage, limit }) => {
             <th className="p-2 font-normal">Date & Time</th>
             <th className="p-2 font-normal">Service</th>
             <th className="p-2 font-normal">Server</th>
+            <th className="p-2 font-normal">Discount</th>
             <th className="p-2 font-normal">Price</th>
-            <th className="p-2 font-normal">Reason</th>
+             <th className="p-2 font-normal">Reason</th>
             <th className="p-2 font-normal">Status</th>
             
           </tr>
@@ -412,6 +413,7 @@ const NumberTable = ({ data, currentPage, limit }) => {
               </td>
               <td className="p-2 font-normal text-sm">{entry.serviceName}</td>
               <td className="p-2 font-normal text-sm">{entry.server}</td>
+              <td className="p-2 font-normal text-sm">{entry.Discount}</td>
               <td className="p-2 font-normal text-sm">{entry.price}</td>
               <td className="p-2 font-normal text-sm">{entry.reason}</td>
               <td className="p-2 font-normal text-sm text-teal-400">
@@ -554,6 +556,18 @@ const NumberTabelMob = ({ data, currentPage, limit }) => {
                   {item.server}
                 </td>
               </tr>
+              <tr>
+  <td className="border-b-2 border-[#949494] p-3 px-5 text-[#959595]">
+    Discount
+  </td>
+  <td
+    className="border-b-2 border-[#949494] p-3"
+    style={wrapStyle}
+  >
+    {item.Discount ?? 0}
+  </td>
+</tr>
+
               <tr>
                 <td className="border-b-2 border-[#949494] p-3 px-5 text-[#959595]">
                   Price

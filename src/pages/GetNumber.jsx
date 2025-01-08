@@ -211,9 +211,9 @@ const GetNumber = () => {
         const updatedTransactions = []; // Store updated transactions
 
         for (const order of orders) {
-            const { server, numberId, otpType } = order; // Use 'number' here
+            const { server, requestId } = order; // Use 'number' here
             const response = await axios.get(
-                `/api/service/get-otp?api_key=${apiKey}&server=${server}&id=${numberId}` // Use 'number' here
+                `/api/service/get-otp?api_key=${apiKey}&server=${server}&requestId=${requestId}` // Use 'number' here
             );
 
             // Assuming your backend returns updated transaction data for the specific number

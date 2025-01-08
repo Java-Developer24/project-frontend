@@ -5,6 +5,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "@/utils/AppContext";
 import toast from "react-hot-toast";
+import Banner from "@/components/shared/Banner";
+import PurchaseDisclaimer from "@/components/shared/PurchaseDisclaimer";
 
 const Home = ({ serviceData }) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -12,7 +14,31 @@ const Home = ({ serviceData }) => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { user, apiKey, fetchBalance } = useContext(AuthContext);
+  const [bannerInfo, setBannerInfo] = useState(null);
+  const [disclaimerInfo, setDisclaimerInfo] = useState(null);
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
+  const [selectedServer, setSelectedServer] = useState(null);
 
+
+
+  // Fetch banner and disclaimer info
+  useEffect(() => {
+    const fetchInfo = async () => {
+      try {
+        const [bannerResponse, disclaimerResponse] = await Promise.all([
+          axios.get('/api/info/banner'),
+          axios.get('/api/info/disclaimer')
+        ]);
+        
+        setBannerInfo(bannerResponse.data);
+        setDisclaimerInfo(disclaimerResponse.data);
+      } catch (error) {
+        console.error('Error fetching info:', error);
+      }
+    };
+
+    fetchInfo();
+  }, []);
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value.toLowerCase());    
     setSelectedService(null);
@@ -50,11 +76,27 @@ const Home = ({ serviceData }) => {
       navigate("/login");
       return;
     }
+
+    setSelectedServer(serverNumber);
+
+    // Check if disclaimer should be shown
+    const hideDisclaimer = localStorage.getItem('hidePurchaseDisclaimer');
+    if (!hideDisclaimer && disclaimerInfo?.content) {
+      setShowDisclaimer(true);
+      return;
+    }
+
+    // If disclaimer shouldn't be shown, proceed with purchase
+    proceedWithPurchase(serverNumber);
+  };
+
+  const proceedWithPurchase = async (serverNumber) => {
     const service = selectedService;
     const selectedServer = selectedService.servers.find(
       (server) => server.serverNumber === serverNumber
     );
-    const otpType = selectedServer?.otp || ""; // Extract the OTP type from the selected server
+    const otpType = selectedServer?.otp || "";
+    
     setLoading(true);
     const getNumberPromise = new Promise((resolve, reject) => {
       const getNumberRequest = async () => {
@@ -62,15 +104,17 @@ const Home = ({ serviceData }) => {
           await axios.get(
             `/api/service/get-number?api_key=${apiKey}&servicecode=${service.name}&server=${serverNumber}&otpType=${otpType}`
           );
-          resolve(); // Resolve the promise on success
+          resolve();
         } catch (error) {
           reject(error);
         } finally {
           setLoading(false);
+          setShowDisclaimer(false);
         }
       };
       getNumberRequest();
     });
+
     await toast.promise(getNumberPromise, {
       loading: "Processing Request...",
       success: () => {
@@ -85,6 +129,10 @@ const Home = ({ serviceData }) => {
     });
   };
 
+  const handleDisclaimerContinue = () => {
+    proceedWithPurchase(selectedServer);
+  };
+
   const formatPrice = (price) => {
     if (price == null) {
       return "0.00";
@@ -95,8 +143,12 @@ const Home = ({ serviceData }) => {
     return `${formattedInteger}.${(decimalPart || "00").padEnd(2, "0")}`;
   };
 
+  
   return (
     <div className="h-[calc(100dvh-4rem)] flex flex-col items-center justify-center">
+      {bannerInfo?.message && (
+        <Banner message={bannerInfo.message} type={bannerInfo.type} />
+      )}
       <div className="w-full flex justify-center my-8">
         <div className="w-full max-w-[720px] flex flex-col items-center bg-[#121315] rounded-2xl p-3 md:p-5">
           <div className="w-full flex bg-[#18191c] rounded-2xl items-center h-[60px] mb-3 px-3 md:px-5">
@@ -155,8 +207,15 @@ const Home = ({ serviceData }) => {
               )}
             </div>
           </div>
+          <PurchaseDisclaimer
+        isOpen={showDisclaimer}
+        onClose={() => setShowDisclaimer(false)}
+        onContinue={handleDisclaimerContinue}
+        disclaimerContent={disclaimerInfo?.content}
+      />
         </div>
       </div>
+      
     </div>
   );
 };

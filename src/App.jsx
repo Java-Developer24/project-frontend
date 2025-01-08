@@ -8,6 +8,7 @@ import HomeWrapper from "@/components/layout/HomeWrapper";
 import VerifyEmail from "./pages/VerifyEmail";
 import EmailVerify from "./pages/EmailVerify";
 const Login = lazy(() => import("@/pages/Login"));
+const AdminAuthLogin=lazy(()=> import("@/pages/AdminAuthLogin "))
 const SignUp = lazy(() => import("@/pages/SignUp"));
 const ChangePassword = lazy(() => import("@/pages/ChangePassword"));
 const Api_key = lazy(() => import("@/pages/Api"));
@@ -27,10 +28,33 @@ function App() {
   const [isMaintenance, setIsMaintenance] = useState(false);
 
   const fetchMaintenance = async () => {
-    const response = await axios.get("/api/service/maintenance");
-    setMaintainance(response.data.maintainance);
-    setIsMaintenance(response.data.maintainance);
+    try {
+      const response = await axios.get("/api/service/maintenance");
+  
+      const { maintainance, adminAccess, message } = response.data;
+  
+      if (maintainance && adminAccess) {
+        console.log(message); // Optional: Log the admin access message
+        setMaintainance(true); // Maintenance is on
+        setIsMaintenance(false); // Admin can access, so disable the maintenance block
+      } else if (maintainance) {
+        setMaintainance(true); // Maintenance is on
+        setIsMaintenance(true); // Block access for regular users
+      } else {
+        setMaintainance(false); // No maintenance
+        setIsMaintenance(false); // Allow access
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 503) {
+        // Maintenance mode is on and the user is not the admin
+        setMaintainance(true);
+        setIsMaintenance(true);
+      } else {
+        console.error("Error fetching maintenance status:", error.message);
+      }
+    }
   };
+  
 
   useEffect(() => {
     fetchMaintenance();
@@ -101,6 +125,12 @@ function App() {
                   </ProtectRoute>
                 }
               />
+                <Route path="/admin-auth-login" element={
+                  <ProtectRoute user={user} redirect="/">
+                  <AdminAuthLogin />
+                </ProtectRoute>
+                  
+                  } />
               <Route
                 path="/my-orders"
                 element={
