@@ -43,7 +43,7 @@ const Home = ({ serviceData }) => {
     setSearchQuery(e.target.value.toLowerCase());    
     setSelectedService(null);
   };
-  console.log(serviceData)
+  
 
   const handleServiceClick = (service) => {
     if (!service || !service.name) {
@@ -143,6 +143,11 @@ const Home = ({ serviceData }) => {
     return `${formattedInteger}.${(decimalPart || "00").padEnd(2, "0")}`;
   };
 
+
+
+  const anyOtherService =  serviceData.filter((service) =>
+    service.name === "Anyother"
+  );
   
   return (
     <div className="h-[calc(100dvh-4rem)] flex flex-col items-center justify-center">
@@ -150,7 +155,7 @@ const Home = ({ serviceData }) => {
         <Banner message={bannerInfo.message} type={bannerInfo.type} />
       )}
       <div className="w-full flex justify-center my-8">
-        <div className="w-full max-w-[720px] flex flex-col items-center bg-[#121315] rounded-2xl p-3 md:p-5">
+        <div className="w-full max-w-[980px] flex flex-col items-center bg-[#121315] rounded-2xl p-3 md:p-5">
           <div className="w-full flex bg-[#18191c] rounded-2xl items-center h-[60px] mb-3 px-3 md:px-5">
             <Icon.search className="text-[30px] text-primary" />
             <input
@@ -167,7 +172,7 @@ const Home = ({ serviceData }) => {
               ""
             )}
           </div>
-          <div className="flex flex-col w-full h-[450px] md:h-[340px]">
+          <div className="flex flex-col w-full h-[450px] md:h-[460px]">
             <h5 className="p-3">{selectedService ? "Select Server" : "Services"}</h5>
             <div className="rounded-2xl flex flex-col overflow-y-auto hide-scrollbar h-full">
               {selectedService ? (
@@ -194,7 +199,7 @@ const Home = ({ serviceData }) => {
                    
                     </button>
                   ))
-              ) : (
+              ) : filteredServices.length > 0 ? (
                 filteredServices.map((i) => (
                   <button
                     className="bg-[#282828] py-4 px-3 md:px-5 flex mb-1 w-full items-center justify-between rounded-lg"
@@ -204,6 +209,21 @@ const Home = ({ serviceData }) => {
                     <h3 className="capitalize font-medium text-start">{i.name}</h3>
                   </button>
                 ))
+              ): (
+                <button
+                  className="bg-[#282828] py-4 px-3 md:px-5 flex mb-1 w-full items-center justify-between rounded-lg"
+                  onClick={() => handleServiceClick(anyOtherService.name)}
+                >
+                  <h3 className="capitalize font-medium">
+                    {anyOtherService}
+                  </h3>
+                  <div className="flex items-center">
+                    <p className="text-base">
+                      {formatPrice(anyOtherService.price)}
+                    </p>
+                    <Icon.indianRupee className="w-4 h-4" />
+                  </div>
+                </button>
               )}
             </div>
           </div>

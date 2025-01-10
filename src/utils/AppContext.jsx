@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode"; // Correct import without curly braces
 import axios from "axios";
+import { Navigate } from "react-router-dom";
 
 export const AuthContext = createContext();
 
@@ -27,11 +28,14 @@ export function AuthProvider({ children }) {
           },
         }
       );
+     
+      
       console.log(response.data);
       return response.data; // Returns user data if the token is valid
     } catch (error) {
       console.error("Token validation failed:", error.response?.data?.message);
       localStorage.removeItem("paidsms-token");
+      Navigate("/login")
       return null;
     }
   };
@@ -137,7 +141,7 @@ export function AuthProvider({ children }) {
     fetchServiceData();
   };
 
-  const login = (token) => {
+  const login =  (token) => {
     const decodedToken = jwtDecode(token);
     const userId = decodedToken.id;
     const googleId = decodedToken.googleId; // Handle Google login ID

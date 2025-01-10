@@ -30,11 +30,11 @@ function App() {
   const fetchMaintenance = async () => {
     try {
       const response = await axios.get("/api/service/maintenance");
-  
+      console.log(response.data.maintainance)
       const { maintainance, adminAccess, message } = response.data;
   
       if (maintainance && adminAccess) {
-        console.log(message); // Optional: Log the admin access message
+       
         setMaintainance(true); // Maintenance is on
         setIsMaintenance(false); // Admin can access, so disable the maintenance block
       } else if (maintainance) {
@@ -55,6 +55,12 @@ function App() {
     }
   };
   
+
+  // const fetchMaintenance = async () => {
+  //   const response = await axios.get("/api/service/maintenance");
+  //   setMaintainance(response.data.maintainance);
+  //   setIsMaintenance(response.data.maintainance);
+  // };
 
   useEffect(() => {
     fetchMaintenance();

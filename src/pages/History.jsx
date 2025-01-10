@@ -24,6 +24,7 @@ const History = () => {
   const [rechargeHistory, setRechargeHistory] = useState([]);
   const [transactionHistory, setTransactionHistory] = useState([]);
   const { user } = useContext(AuthContext);
+  const [isLoading, setIsLoading] = useState(true); // State to track loading
  
   const userId = user.userId;
   
@@ -40,33 +41,39 @@ const History = () => {
 
 
   
-
   useEffect(() => {
     const fetchHistory = async () => {
+      setIsLoading(true); // Start loading
       try {
         const [rechargeResponse, transactionResponse] = await Promise.all([
-          axios.get(`/api/history/recharge-history?userId=${userId}`,{
+          axios.get(`/api/history/recharge-history?userId=${userId}`, {
             headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },}),
-          axios.get(`/api/history/transaction-history?userId=${userId}`,{
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }),
+          axios.get(`/api/history/transaction-history?userId=${userId}`, {
             headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },}),
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }),
         ]);
-
+  
         setRechargeHistory(rechargeResponse.data.data || []); // Ensure it's an array
         setTransactionHistory(transactionResponse.data.data || []); // Ensure it's an array
       } catch (error) {
         toast.error("Failed to fetch history data");
+      }finally {
+        setIsLoading(false); // Stop loading
       }
     };
-
-    fetchHistory();
+  
+    if (userId) {
+      fetchHistory(); // Call fetchHistory only when userId is defined
+    }
   }, [userId]);
-
+  
   // Filter and group transaction history data
   const filterTransactionHistory = (data) => {
     if (!Array.isArray(data)) {
@@ -371,6 +378,15 @@ const wrapStyle = {
   overflowWrap: "break-word",
 };
 const NumberTable = ({ data, currentPage, limit }) => {
+  const getPriceDisplay = (price, status) => {
+    const symbol = status === "Success" ? "-" : "+";
+    const colorClass = status === "Success" ? "text-red-500" : "text-green-500";
+    return (
+      <span className={colorClass}>
+        {symbol}₹{Math.abs(price)}
+      </span>
+    );
+  };
   return (
     <div className="bg-transparent text-white relative">
       <table className="w-full text-center border-collapse">
@@ -414,12 +430,15 @@ const NumberTable = ({ data, currentPage, limit }) => {
               <td className="p-2 font-normal text-sm">{entry.serviceName}</td>
               <td className="p-2 font-normal text-sm">{entry.server}</td>
               <td className="p-2 font-normal text-sm">{entry.Discount}</td>
-              <td className="p-2 font-normal text-sm">{entry.price}</td>
+              
               <td className="p-2 font-normal text-sm">{entry.reason}</td>
-              <td className="p-2 font-normal text-sm text-teal-400">
-                {statusMap[entry.status] || ""}
+              
+              <td className="p-2 font-normal text-sm">
+                {getPriceDisplay(entry.price, entry.status)}
               </td>
-             
+              <td className="p-2 font-normal text-sm text-teal-400">
+                {entry.status}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -465,6 +484,15 @@ const Filter = ({ transFilter, setTranFilter }) => {
 };
 
 const NumberTabelMob = ({ data, currentPage, limit }) => {
+  const getPriceDisplay = (price, status) => {
+    const symbol = status === "Success" ? "-" : "+";
+    const colorClass = status === "Success" ? "text-red-500" : "text-green-500";
+    return (
+      <span className={colorClass}>
+        {symbol}₹{Math.abs(price)}
+      </span>
+    );
+  };
   return (
     <>
       {data.map((item, index) => (
@@ -564,19 +592,17 @@ const NumberTabelMob = ({ data, currentPage, limit }) => {
     className="border-b-2 border-[#949494] p-3"
     style={wrapStyle}
   >
-    {item.Discount ?? 0}
+    {item.Discount || 0}
+
   </td>
 </tr>
 
-              <tr>
+<tr>
                 <td className="border-b-2 border-[#949494] p-3 px-5 text-[#959595]">
                   Price
                 </td>
-                <td
-                  className="border-b-2 border-[#949494] p-3"
-                  style={wrapStyle}
-                >
-                  {item.price}
+                <td className="border-b-2 border-[#949494] p-3">
+                  {getPriceDisplay(item.price, item.status)}
                 </td>
               </tr>
               <tr>
@@ -590,11 +616,9 @@ const NumberTabelMob = ({ data, currentPage, limit }) => {
                   {item.reason}
                 </td>
               </tr>
-              <tr>
-                <td className="p-3 px-5 text-[#959595]" style={wrapStyle}>
-                  Status
-                </td>
-                <td className="p-3">{statusMap[item.status] || ""}</td>
+               <tr>
+                <td className="p-3 px-5 text-[#959595]">Status</td>
+                <td className="p-3 text-teal-400">{item.status}</td>
               </tr>
               
             </tbody>
