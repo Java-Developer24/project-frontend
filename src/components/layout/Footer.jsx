@@ -18,10 +18,9 @@ const Footer = () => {
   return (
     <footer className="bg-[#121315] text-white py-8 mt-auto animate-in fade-in-0 duration-1000">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 w-full gap-20  ">
-          
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-20">
           {/* Quick Links */}
-          <div className="animate-in slide-in-from-bottom duration-700 delay-100 pl-40 ml-20">
+          <div className="animate-in slide-in-from-bottom duration-700 delay-100 px-4 md:pl-40 md:ml-20">
             <h3 className="text-lg font-semibold mb-4 text-primary">Quick Links</h3>
             <ul className="space-y-2">
               <li>
@@ -34,29 +33,11 @@ const Footer = () => {
                   About Us
                 </Link>
               </li>
-              {/* <li>
-                <Link 
-                  to="/api" 
-                  className="text-gray-400 hover:text-primary transition-all duration-300 hover:translate-x-1 inline-block"
-                  onClick={(e) => handleProtectedLink(e, '/api')}
-                >
-                  API Documentation
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/history" 
-                  className="text-gray-400 hover:text-primary transition-all duration-300 hover:translate-x-1 inline-block"
-                  onClick={(e) => handleProtectedLink(e, '/history')}
-                >
-                  Transaction History
-                </Link>
-              </li> */}
             </ul>
           </div>
 
           {/* Support */}
-          <div className="animate-in slide-in-from-bottom duration-700 delay-200 ml-20 ">
+          <div className="animate-in slide-in-from-bottom duration-700 delay-200 px-4 md:ml-20">
             <h3 className="text-lg font-semibold mb-4 text-primary">Support</h3>
             <ul className="space-y-2">
               <li>
@@ -83,28 +64,15 @@ const Footer = () => {
               </li>
             </ul>
           </div>
-
-          {/* Payment Methods */}
-          {/* <div className="animate-in slide-in-from-bottom duration-700 delay-300">
-            <h3 className="text-lg font-semibold mb-4 text-primary">Payment Methods</h3>
-            <div className="flex gap-4">
-              <div className="bg-[#1e1e1e] p-3 rounded-lg hover:bg-[#282828] transition-all duration-300 hover:scale-105">
-                <Icon.trx className="w-8 h-8" />
-              </div>
-              <div className="bg- p-2 rounded-lg transition-all duration-300 hover:scale-105">
-                <img src="https://images.gizbot.com/img/2024/08/upi2-1723465193.jpeg" alt="UPI" className="w-15 h-10" />
-              </div>
-            </div>
-          </div> */}
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-8 pt-8 border-t border-gray-800 animate-in fade-in-0 duration-1000 delay-500">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 text-sm">
+        <div className="mt-8 pt-8 border-t border-gray-800 animate-in fade-in-0 duration-1000 delay-500 px-4">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-gray-400 text-sm text-center md:text-left">
               © {new Date().getFullYear()} PaidSMS. All rights reserved.
             </p>
-            <div className="flex gap-4 mt-4 md:mt-0">
+            <div className="flex gap-4">
               <Link to="/privacy-policy" className="text-gray-400 hover:text-primary text-sm transition-all duration-300 hover:translate-y-[-2px]">
                 Privacy Policy
               </Link>

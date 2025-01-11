@@ -65,8 +65,11 @@ function App() {
 
   useEffect(() => {
     fetchMaintenance();
+    const interval = setInterval(fetchMaintenance, 10000);
+    return () => clearInterval(interval);
   }, []);
 
+ 
   return (
     <BrowserRouter>
       <Suspense fallback={<LayoutLoader />}>
@@ -84,7 +87,7 @@ function App() {
                 element={
                   <ProtectRoute
                     user={user}
-                    googleRedirect="/" // Redirect to home if logged in with Google
+                    googleRedirect="/"
                     redirect="/"
                     isGoogleLogin={isGoogleLogin}
                   >
@@ -132,12 +135,11 @@ function App() {
                   </ProtectRoute>
                 }
               />
-                <Route path="/admin-auth-login" element={
-                  <ProtectRoute user={user} redirect="/">
+              <Route path="/admin-auth-login" element={
+                <ProtectRoute user={user} redirect="/">
                   <AdminAuthLogin />
                 </ProtectRoute>
-                  
-                  } />
+              } />
               <Route
                 path="/my-orders"
                 element={
@@ -178,12 +180,8 @@ function App() {
                   </ProtectRoute>
                 }
               />
-              {/* <Route path="/verify-email?token=" element={<VerifyEmail />} /> */}
               <Route path="/verify-email" element={<VerifyEmail />} />
               <Route path="/email-verify" element={<EmailVerify />} />
-
-              <Route path="/*" element={<NotFound />} />
-               {/* <Route path="/api/user/verifyEmail/:token" element={<VerifyEmail/>} /> */}
               <Route path="/*" element={<NotFound />} />
             </>
           )}
@@ -192,5 +190,6 @@ function App() {
     </BrowserRouter>
   );
 }
+
 
 export default App;

@@ -219,154 +219,167 @@ const History = () => {
   return (
     <div>
       <div className="bg-[#121315] h-[calc(100dvh-6rem)] flex flex-col overflow-y-auto w-full p-4 md:p-6 rounded-lg mb-[30px] border-none dark relative">
-        <div className="flex flex-col md:flex-row items-center justify-between mb-2 md:mb-5">
-          <div className="flex items-center h-auto">
-            <div
-              className={`mr-5 text-sm md:text-base  md:mr-8 cursor-pointer ${
-                selectedTabs
-                  ? "underline underline-offset-2 text-primary"
-                  : "text-[#A5A5A5]"
-              }`}
-              onClick={() => setSelectedTabs(true)}
-            >
-              Recharge History
-            </div>
-            <div
-              className={`cursor-pointer text-sm md:text-base ${
-                !selectedTabs
-                  ? "underline  underline-offset-2 text-primary"
-                  : "text-[#A5A5A5]"
-              }`}
-              onClick={() => setSelectedTabs(false)}
-            >
-              Number History
-            </div>
+        {isLoading ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-primary"></div>
           </div>
-          {!selectedTabs && (
-            <div className="flex items-center gap-4">
-              <Filter setTranFilter={setTranFilter} transFilter={tranFilter} />
-              <p className="min-w-fit text-sm">
-                Total: {filteredTransactionHistory.length}
-              </p>
-            </div>
-          )}
-          <div className="flex items-center gap-4">
-            <Limiter
-              limit={selectedTabs ? rechargeLimit : transactionLimit}
-              onLimitChange={(value) =>
-                selectedTabs
-                  ? handleRechargeLimitChange(value)
-                  : handleTransactionLimitChange(value)
-              }
-            />
-            <p className="text-[#A5A5A5] text-sm">
-              Data:{" "}
-              <span className="text-white font-normal text-xs">
-                {getDateRange(selectedTabs ? rechargeData : transactionData)}
-              </span>
-            </p>
-          </div>
-        </div>
-        <hr className="border-t border-[#373737]" />
-
-        <div className="h-[calc(100%-100px)] overflow-y-auto hide-scrollbar relative">
-          {selectedTabs ? (
-            rechargeHistory.length > 0 ? (
-              <>
-                <div className="hidden md:block">
-                  <RechargeTable
-                    data={rechargeData}
-                    currentPage={rechargeCurrentPage}
-                    limit={rechargeLimit}
-                  />
+        ) : (
+          <>
+            {/* Header Section */}
+            <div className="flex flex-col md:flex-row items-center justify-between mb-2 md:mb-5">
+              <div className="flex items-center h-auto">
+                <div
+                  className={`mr-5 text-sm md:text-base md:mr-8 cursor-pointer ${
+                    selectedTabs
+                      ? "underline underline-offset-2 text-primary"
+                      : "text-[#A5A5A5]"
+                  }`}
+                  onClick={() => setSelectedTabs(true)}
+                >
+                  Recharge History
                 </div>
-                <div className="block md:hidden">
-                  <RechargeTabelMob
-                    data={rechargeData}
-                    currentPage={rechargeCurrentPage}
-                    limit={rechargeLimit}
-                  />
+                <div
+                  className={`cursor-pointer text-sm md:text-base ${
+                    !selectedTabs
+                      ? "underline underline-offset-2 text-primary"
+                      : "text-[#A5A5A5]"
+                  }`}
+                  onClick={() => setSelectedTabs(false)}
+                >
+                  Number History
                 </div>
-              </>
-            ) : (
-              <div className="text-white text-center h-full flex items-center justify-center">
-                No history available
               </div>
-            )
-          ) : transactionHistory.length > 0 ? (
-            <>
-              <div className="hidden md:block">
-                <NumberTable
-                  data={transactionData}
-                  
-                  currentPage={transactionCurrentPage}
-                  limit={transactionLimit}
+  
+              {!selectedTabs && (
+                <div className="flex items-center gap-4">
+                  <Filter setTranFilter={setTranFilter} transFilter={tranFilter} />
+                  <p className="min-w-fit text-sm">
+                    Total: {filteredTransactionHistory.length}
+                  </p>
+                </div>
+              )}
+  
+              <div className="flex items-center gap-4">
+                <Limiter
+                  limit={selectedTabs ? rechargeLimit : transactionLimit}
+                  onLimitChange={(value) =>
+                    selectedTabs
+                      ? handleRechargeLimitChange(value)
+                      : handleTransactionLimitChange(value)
+                  }
                 />
+                <p className="text-[#A5A5A5] text-sm">
+                  Data:{" "}
+                  <span className="text-white font-normal text-xs">
+                    {getDateRange(selectedTabs ? rechargeData : transactionData)}
+                  </span>
+                </p>
               </div>
-              <div className="block md:hidden">
-                <NumberTabelMob
-                  data={transactionData}
-                  currentPage={transactionCurrentPage}
-                  limit={transactionLimit}
-                />
-              </div>
-            </>
-          ) : (
-            <div className="text-center h-full flex items-center justify-center">
-              No history available
             </div>
-          )}
-        </div>
-
-        {/* Pagination controls */}
-        {filteredData.length > 0 && (
-          <div className="flex items-center justify-center gap-4 bg-[#121315] pt-4">
-            {selectedTabs ? (
-              <>
-                <Button
-                  className="py-1 px-6 text-xs w-20 h-8 !rounded-md border-2 border-white font-normal hover:!bg-white hover:text-black transition-colors duration-200 ease-in-out"
-                  onClick={handleRechargePrevPage}
-                  disabled={rechargeCurrentPage === 1}
-                >
-                  Previous
-                </Button>
-                <Button
-                  className="py-1 px-6 text-xs w-20 h-8 !rounded-md border-2 border-white font-normal hover:!bg-white hover:text-black transition-colors duration-200 ease-in-out"
-                  onClick={handleRechargeNextPage}
-                  disabled={
-                    rechargeCurrentPage * rechargeLimit >=
-                    rechargeHistory.length
-                  }
-                >
-                  Next
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button
-                  className="py-1 px-6 text-xs w-20 h-8 !rounded-md border-2 border-white font-normal hover:!bg-white hover:text-black transition-colors duration-200 ease-in-out"
-                  onClick={handleTransactionPrevPage}
-                  disabled={transactionCurrentPage === 1}
-                >
-                  Previous
-                </Button>
-                <Button
-                  className="py-1 px-6 text-xs w-20 h-8 !rounded-md border-2 border-white font-normal hover:!bg-white hover:text-black transition-colors duration-200 ease-in-out"
-                  onClick={handleTransactionNextPage}
-                  disabled={
-                    transactionCurrentPage * transactionLimit >=
-                    filteredTransactionHistory.length
-                  }
-                >
-                  Next
-                </Button>
-              </>
+  
+            <hr className="border-t border-[#373737]" />
+  
+            {/* Content Section */}
+            <div className="h-[calc(100%-100px)] overflow-y-auto hide-scrollbar relative">
+              {selectedTabs ? (
+                rechargeHistory.length > 0 ? (
+                  <>
+                    <div className="hidden md:block">
+                      <RechargeTable
+                        data={rechargeData}
+                        currentPage={rechargeCurrentPage}
+                        limit={rechargeLimit}
+                      />
+                    </div>
+                    <div className="block md:hidden">
+                      <RechargeTabelMob
+                        data={rechargeData}
+                        currentPage={rechargeCurrentPage}
+                        limit={rechargeLimit}
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-white text-center h-full flex items-center justify-center">
+                    No history available
+                  </div>
+                )
+              ) : transactionHistory.length > 0 ? (
+                <>
+                  <div className="hidden md:block">
+                    <NumberTable
+                      data={transactionData}
+                      currentPage={transactionCurrentPage}
+                      limit={transactionLimit}
+                    />
+                  </div>
+                  <div className="block md:hidden">
+                    <NumberTabelMob
+                      data={transactionData}
+                      currentPage={transactionCurrentPage}
+                      limit={transactionLimit}
+                    />
+                  </div>
+                </>
+              ) : (
+                <div className="text-center h-full flex items-center justify-center">
+                  No history available
+                </div>
+              )}
+            </div>
+  
+            {/* Pagination Controls */}
+            {filteredData.length > 0 && (
+              <div className="flex items-center justify-center gap-4 bg-[#121315] pt-4">
+                {selectedTabs ? (
+                  <>
+                    <Button
+                      className="py-1 px-6 text-xs w-20 h-8 !rounded-md border-2 border-white font-normal hover:!bg-white hover:text-black transition-colors duration-200 ease-in-out"
+                      onClick={handleRechargePrevPage}
+                      disabled={rechargeCurrentPage === 1}
+                    >
+                      Previous
+                    </Button>
+                    <Button
+                      className="py-1 px-6 text-xs w-20 h-8 !rounded-md border-2 border-white font-normal hover:!bg-white hover:text-black transition-colors duration-200 ease-in-out"
+                      onClick={handleRechargeNextPage}
+                      disabled={
+                        rechargeCurrentPage * rechargeLimit >=
+                        rechargeHistory.length
+                      }
+                    >
+                      Next
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      className="py-1 px-6 text-xs w-20 h-8 !rounded-md border-2 border-white font-normal hover:!bg-white hover:text-black transition-colors duration-200 ease-in-out"
+                      onClick={handleTransactionPrevPage}
+                      disabled={transactionCurrentPage === 1}
+                    >
+                      Previous
+                    </Button>
+                    <Button
+                      className="py-1 px-6 text-xs w-20 h-8 !rounded-md border-2 border-white font-normal hover:!bg-white hover:text-black transition-colors duration-200 ease-in-out"
+                      onClick={handleTransactionNextPage}
+                      disabled={
+                        transactionCurrentPage * transactionLimit >=
+                        filteredTransactionHistory.length
+                      }
+                    >
+                      Next
+                    </Button>
+                  </>
+                )}
+              </div>
             )}
-          </div>
+          </>
         )}
       </div>
     </div>
   );
+  
 };
 const statusMap = {
   Cancelled: "Cancelled",
@@ -392,7 +405,7 @@ const NumberTable = ({ data, currentPage, limit }) => {
       <table className="w-full text-center border-collapse">
         <thead className="sticky top-0 bg-[#121315]">
           <tr className="text-[#A5A5A5] h-12 border-b border-[#373737]">
-            <th className="p-2 font-normal">SL No’s</th>
+            <th className="p-2 font-normal">SL No's</th>
             <th className="p-2 font-normal">ID</th>
             <th className="p-2 font-normal">Number</th>
             <th className="p-2 font-normal">OTP</th>
@@ -401,9 +414,8 @@ const NumberTable = ({ data, currentPage, limit }) => {
             <th className="p-2 font-normal">Server</th>
             <th className="p-2 font-normal">Discount</th>
             <th className="p-2 font-normal">Price</th>
-             <th className="p-2 font-normal">Reason</th>
+            <th className="p-2 font-normal">Reason</th>
             <th className="p-2 font-normal">Status</th>
-            
           </tr>
         </thead>
         <tbody>
@@ -412,33 +424,22 @@ const NumberTable = ({ data, currentPage, limit }) => {
               <td className="p-2 font-normal text-sm">
                 {(currentPage - 1) * limit + index + 1}
               </td>
-              <td className="p-2 font-normal text-sm">{entry._Id}</td>
+              <td className="p-2 font-normal text-sm">{entry._id}</td>
               <td className="p-2 font-normal text-sm">{entry.number}</td>
-              <td
-                className="p-2 font-normal text-sm max-w-[400px]"
-                style={wrapStyle}
-              >
-                <span dangerouslySetInnerHTML={{ __html: entry.otps[0].message }} />
+              <td className="p-2 font-normal text-sm max-w-[400px]" style={{ wordBreak: 'break-word' }}>
+                {entry.otps && entry.otps[0] && entry.otps[0].message}
               </td>
               <td className="p-2 font-normal text-sm">
-              {moment(entry.date, "YYYY/MM/DDTHH:mm:ss A").isValid()
-    ? moment(entry.date, "YYYY/MM/DDTHH:mm:ss A").format(
-        "YYYY/MM/DD hh:mm:ss A"
-      )
-    : "Invalid Date"}
+                {moment(entry.date, "YYYY/MM/DDTHH:mm:ss A").isValid()
+                  ? moment(entry.date, "YYYY/MM/DDTHH:mm:ss A").format("YYYY/MM/DD hh:mm:ss A")
+                  : "Invalid Date"}
               </td>
               <td className="p-2 font-normal text-sm">{entry.serviceName}</td>
               <td className="p-2 font-normal text-sm">{entry.server}</td>
-              <td className="p-2 font-normal text-sm">{entry.Discount}</td>
-              
+              <td className="p-2 font-normal text-sm">{entry.Discount || 0}</td>
+              <td className="p-2 font-normal text-sm">{getPriceDisplay(entry.price, entry.status)}</td>
               <td className="p-2 font-normal text-sm">{entry.reason}</td>
-              
-              <td className="p-2 font-normal text-sm">
-                {getPriceDisplay(entry.price, entry.status)}
-              </td>
-              <td className="p-2 font-normal text-sm text-teal-400">
-                {entry.status}
-              </td>
+              <td className="p-2 font-normal text-sm text-teal-400">{entry.status}</td>
             </tr>
           ))}
         </tbody>
@@ -495,6 +496,7 @@ const NumberTabelMob = ({ data, currentPage, limit }) => {
   };
   return (
     <>
+    
       {data.map((item, index) => (
         <div
           key={index}
@@ -537,16 +539,21 @@ const NumberTabelMob = ({ data, currentPage, limit }) => {
                 </td>
               </tr>
               <tr>
-                <td className="border-b-2 border-[#949494] p-3 px-5 text-[#959595]">
-                  OTP
-                </td>
-                <td
-                  className="border-b-2 border-[#949494] p-3"
-                  style={wrapStyle}
-                >
-                  <span dangerouslySetInnerHTML={{ __html: item.otps  }} />
-                </td>
-              </tr>
+  <td className="border-b-2 border-[#949494] p-3 px-5 text-[#959595]">
+    OTP
+  </td>
+  <td
+    className="border-b-2 border-[#949494] p-3"
+    style={wrapStyle}
+  >
+    {item.otps ? (
+      <span dangerouslySetInnerHTML={{ __html: item.otps }} />
+    ) : (
+      <span>N/A</span>
+    )}
+  </td>
+</tr>
+
               <tr>
                 <td className="border-b-2 border-[#949494] p-3 px-5 text-[#959595]">
                   Date & Time
@@ -555,11 +562,7 @@ const NumberTabelMob = ({ data, currentPage, limit }) => {
                   className="border-b-2 border-[#949494] p-3"
                   style={wrapStyle}
                 >
-                   {moment(item.date, "YYYY/MM/DDTHH:mm:ss A").isValid()
-    ? moment(item.date, "YYYY/MM/DDTHH:mm:ss A").format(
-        "YYYY/MM/DD hh:mm:ss A"
-      )
-    : "Invalid Date"}
+                   {moment(item.date, "YYYY/MM/DDTHH:mm:ss A").isValid()? moment(item.date, "YYYY/MM/DDTHH:mm:ss A").format("YYYY/MM/DD hh:mm:ss A")    : "Invalid Date"}
                 </td>
               </tr>
               <tr>
@@ -628,4 +631,5 @@ const NumberTabelMob = ({ data, currentPage, limit }) => {
     </>
   );
 };
+
 export default AppLayout()(History);

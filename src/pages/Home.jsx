@@ -56,13 +56,22 @@ const Home = ({ serviceData }) => {
 
   const getFilteredServices = () => {
     if (!searchQuery) {
-      return serviceData; // Return the full array if no search query
+      return serviceData;
     }
-    return serviceData.filter((service) =>
+    const filtered = serviceData.filter((service) =>
       service.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
+    
+    // If no results found, return the "Any Other" service
+    if (filtered.length === 0) {
+      const anyOtherService = serviceData.find(service => 
+        service.name.toLowerCase() === "anyOther"
+      );
+      return anyOtherService ? [anyOtherService] : [];
+    }
+    
+    return filtered;
   };
-
   const filteredServices = Array.isArray(serviceData) ? getFilteredServices() : [];
 
   const clearSearch = () => {
@@ -145,9 +154,11 @@ const Home = ({ serviceData }) => {
 
 
 
-  const anyOtherService =  serviceData.filter((service) =>
-    service.name === "Anyother"
+  const anyOtherService = serviceData.find(
+    (service) => service.name.toLowerCase() === "anyother"
   );
+  
+  
   
   return (
     <div className="h-[calc(100dvh-4rem)] flex flex-col items-center justify-center">
@@ -212,16 +223,13 @@ const Home = ({ serviceData }) => {
               ): (
                 <button
                   className="bg-[#282828] py-4 px-3 md:px-5 flex mb-1 w-full items-center justify-between rounded-lg"
-                  onClick={() => handleServiceClick(anyOtherService.name)}
+                  onClick={() => handleServiceClick(anyOtherService)}
                 >
                   <h3 className="capitalize font-medium">
-                    {anyOtherService}
+                    {anyOtherService.name}
                   </h3>
                   <div className="flex items-center">
-                    <p className="text-base">
-                      {formatPrice(anyOtherService.price)}
-                    </p>
-                    <Icon.indianRupee className="w-4 h-4" />
+                    
                   </div>
                 </button>
               )}
