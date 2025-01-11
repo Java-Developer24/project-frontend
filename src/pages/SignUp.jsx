@@ -203,7 +203,7 @@ const SignUp = () => {
               <div className="flex justify-center my-4">
               <Turnstile
                 
-                sitekey="0x4AAAAAAA3HP5RN6qhb67vx" // Replace with your site key
+                sitekey="0x4AAAAAAA1Y9hSf6wBjYC09" // Replace with your site key
                 onVerify={(token) => {
                   // console.log("Captcha token:", token);
                   setCaptchaValue(token);
