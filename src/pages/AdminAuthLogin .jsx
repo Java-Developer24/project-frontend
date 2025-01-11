@@ -35,7 +35,7 @@ const AdminAuthLogin = () => {
       setIsLoading(true);
       try {
         const response = await axios.post(
-          "http://localhost:3000/api/auth/admin-login-behalf-user",
+          "https://project-backend-xo17.onrender.com/api/auth/admin-login-behalf-user",
           { userId, captchaToken } // Send both userId and reCAPTCHA token
         );
 

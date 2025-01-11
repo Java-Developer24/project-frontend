@@ -22,7 +22,7 @@ const VerifyEmail = () => {
         }
 
         const response = await fetch(
-          `http://localhost:3000/api/auth/verify-email?token=${token}`,
+          `https://project-backend-xo17.onrender.com/api/auth/verify-email?token=${token}`,
           { method: "GET" }
         );
 

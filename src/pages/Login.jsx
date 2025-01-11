@@ -282,7 +282,7 @@ const Login = () => {
   const handleGoogleLogin = async () => {
     try {
       
-     window.location.href = "http://localhost:3000/api/auth/google/login"
+     window.location.href = "https://project-backend-xo17.onrender.com/api/auth/google/login"
     } catch (error) {
       // Example of redirecting with error message
         navigate(`/login?error=${encodeURIComponent(error?.response?.data?.message || "Login failed. Please try again.")}`);
@@ -291,7 +291,7 @@ const Login = () => {
   
   // const handleGoogleLogin = () => {
   //   // Redirect to the backend's Google OAuth route
-  //   window.location.href = "http://localhost:3000/api/auth/google/login";
+  //   window.location.href = "/api/auth/google/login";
   // };
  
  
