@@ -1,5 +1,5 @@
 import  { lazy, Suspense, useContext, useEffect, useState } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import ProtectRoute from "@/components/auth/ProtectRoute";
 import { LayoutLoader } from "@/components/layout/Loaders";
 import axios from "axios";
@@ -62,9 +62,10 @@ function App() {
   //   setIsMaintenance(response.data.maintainance);
   // };
 
+  const location = useLocation(); // Hook to detect route changes
   useEffect(() => {
     fetchMaintenance();
-  }, []);
+  }, [location]);
 
   return (
     <BrowserRouter>
