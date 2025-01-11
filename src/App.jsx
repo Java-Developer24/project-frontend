@@ -62,10 +62,10 @@ function App() {
   //   setIsMaintenance(response.data.maintainance);
   // };
 
-  const location = useLocation(); // Hook to detect route changes
+
   useEffect(() => {
     fetchMaintenance();
-  }, [location]);
+  }, []);
 
   return (
     <BrowserRouter>
