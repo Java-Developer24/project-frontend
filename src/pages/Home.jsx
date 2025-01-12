@@ -162,10 +162,14 @@ const Home = ({ serviceData }) => {
   
   return (
     <div className="h-[calc(100dvh-4rem)] flex flex-col items-center justify-center">
+     <div className="w-full mt-2 mb-2">
       {bannerInfo?.message && (
-        <Banner message={bannerInfo.message} type={bannerInfo.type} />
+        <Banner  message={bannerInfo.message} type={bannerInfo.type} />
       )}
-      <div className="w-full flex justify-center my-8">
+      </div>
+    
+      
+      <div className="w-full flex justify-center mb-8">
         <div className="w-full max-w-[980px] flex flex-col items-center bg-[#121315] rounded-2xl p-3 md:p-5">
           <div className="w-full flex bg-[#18191c] rounded-2xl items-center h-[60px] mb-3 px-3 md:px-5">
             <Icon.search className="text-[30px] text-primary" />
@@ -249,6 +253,7 @@ const Home = ({ serviceData }) => {
 };
 
 export default AppLayout()(Home);
+
 
 
 

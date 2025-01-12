@@ -21,8 +21,8 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-20">
           {/* Quick Links */}
           <div className="animate-in slide-in-from-bottom duration-700 delay-100 px-4 md:pl-40 md:ml-20">
-            <h3 className="text-lg font-semibold mb-4 text-primary">Quick Links</h3>
-            <ul className="space-y-2">
+            <h3 className="text-lg font-semibold mb-4 text-primary text-center md:text-left">Quick Links</h3>
+            <ul className="flex justify-evenly gap-4 md:space-y-2 md:flex-col">
               <li>
                 <Link to="/" className="text-gray-400 hover:text-primary transition-all duration-300 hover:translate-x-1 inline-block">
                   Home
@@ -38,8 +38,8 @@ const Footer = () => {
 
           {/* Support */}
           <div className="animate-in slide-in-from-bottom duration-700 delay-200 px-4 md:ml-20">
-            <h3 className="text-lg font-semibold mb-4 text-primary">Support</h3>
-            <ul className="space-y-2">
+            <h3 className="text-lg font-semibold mb-4 text-primary text-center md:text-left">Support</h3>
+            <ul className="flex justify-evenly gap-4 md:space-y-2 md:flex-col">
               <li>
                 <a 
                   href="http://t.me/paidsms_support" 

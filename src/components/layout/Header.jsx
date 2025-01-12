@@ -15,6 +15,7 @@ import { Icon } from "../ui/Icons";
 import { AuthContext } from "@/utils/AppContext";
 
 import SheetComponent from "../shared/SheetComponent";
+import { SheetDescription, SheetHeader, SheetTitle } from "../ui/Sheet";
 
 const Header = () => {
   const [toggleDropdown, setToggleDropdown] = useState(false);
@@ -36,9 +37,9 @@ const Header = () => {
     { to: "/", text: "Home" },
     { to: "/recharge", text: "Recharge" },
     { to: "/history", text: "History" },
-    { to: "http://t.me/paidsms_support", text: "Contact Us" },
+    // { to: "http://t.me/paidsms_support", text: "Contact Us" },
     { to: "/about", text: "About" },
-    { to: "https://t.me/paidsms_official", text: "Join Channel" },
+    // { to: "https://t.me/paidsms_official", text: "Join Channel" },
     { to: "/my-orders", text: "My Orders" },
     { to: "/api", text: "Api" },
     { to: "/check-otp", text: "Check Otp" },
@@ -48,8 +49,8 @@ const Header = () => {
     { to: "/", text: "Home" },
     { to: "/login", text: "Log-in" },
     { to: "/signup", text: "Sign Up" },
-    { to: "http://t.me/paidsms_support", text: "Contact Us" },
-    { to: "https://t.me/paidsms_official", text: "Join Channel" },
+    // { to: "http://t.me/paidsms_support", text: "Contact Us" },
+    // { to: "https://t.me/paidsms_official", text: "Join Channel" },
     { to: "/about", text: "About" },
   ];
 
@@ -68,7 +69,7 @@ const Header = () => {
   };
 
   return (
-    <header className="top-0 inset-x-0 h-[8rem] py-4  bg-black lg:py-2">
+    <header className="top-0 inset-x-0 h-[4rem] py-4  bg-black lg:py-4  sticky">
       <div className="md:container px-[1rem] h-full mx-auto flex items-center justify-between gap-2">
         <Link
           to="/"
@@ -133,7 +134,7 @@ const Header = () => {
                     <Icon.home className="w-4 h-4 text-primary" />
                     Home
                   </Link>
-                  <Link
+                  {/* <Link
                     to="http://t.me/paidsms_support"
                     className={`flex gap-2 w-full items-center font-normal text-[#9E9E9E] transition-colors duration-200 ease-in-out ${
                       pathname === "/contact"
@@ -154,7 +155,7 @@ const Header = () => {
                   >
                     <Icon.joinChannel className="w-4 h-4 text-primary" />
                     Join Channel
-                  </Link>
+                  </Link> */}
                   <Link
                     to="/about"
                     className={`flex gap-2 w-full items-center font-normal text-[#9E9E9E] transition-colors duration-200 ease-in-out ${
@@ -234,12 +235,12 @@ const Header = () => {
                 onClose={toggleSheetLogin}
                 from="left"
               >
-                {/* <SheetHeader className={"hidden"}>
+                <SheetHeader className={"hidden"}>
                   <SheetTitle>Navigation Sidebar</SheetTitle>
                   <SheetDescription>
                     This is for mobile view navigation.
                   </SheetDescription>
-                </SheetHeader> */}
+                </SheetHeader>
                 <nav className="flex gap-6 flex-wrap flex-col items-start text-base pt-[4rem]">
                   <hr className="border border-[#585858] my-1 w-full" />
                   <Link
