@@ -118,11 +118,7 @@ const Header = () => {
                 onClose={toggleSheet}
                 from="left"
               >
-<<<<<<< HEAD
 {/*                 <SheetHeader className={"hidden"}>
-=======
-                {/* <SheetHeader className={"hidden"}>
->>>>>>> 845c91b (API updates)
                   <SheetTitle>Navigation Sidebar</SheetTitle>
                   <SheetDescription>
                     This is for mobile view navigation.
