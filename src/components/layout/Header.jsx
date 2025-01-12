@@ -235,12 +235,12 @@ const Header = () => {
                 onClose={toggleSheetLogin}
                 from="left"
               >
-                <SheetHeader className={"hidden"}>
+                {/* <SheetHeader className={"hidden"}>
                   <SheetTitle>Navigation Sidebar</SheetTitle>
                   <SheetDescription>
                     This is for mobile view navigation.
                   </SheetDescription>
-                </SheetHeader>
+                </SheetHeader> */}
                 <nav className="flex gap-6 flex-wrap flex-col items-start text-base pt-[4rem]">
                   <hr className="border border-[#585858] my-1 w-full" />
                   <Link
@@ -274,7 +274,7 @@ const Header = () => {
                     <Icon.history className="w-4 h-4 text-primary" />
                     History
                   </Link>
-                  <Link
+                  {/* <Link
                     to="http://t.me/paidsms_support"
                     className={`flex gap-2 w-full items-center font-normal text-[#9E9E9E] transition-colors duration-200 ease-in-out ${
                       pathname === "/contact"
@@ -295,7 +295,7 @@ const Header = () => {
                   >
                     <Icon.joinChannel className="w-4 h-4 text-primary fill-primary" />
                     Join Channel
-                  </Link>
+                  </Link> */}
                   <Link
                     to="/my-orders"
                     className={`flex gap-2 w-full items-center font-normal text-[#9E9E9E] transition-colors duration-200 ease-in-out ${
