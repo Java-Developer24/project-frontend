@@ -193,21 +193,21 @@ const Home = ({ serviceData }) => {
               {selectedService ? (
                 selectedService.servers
                   .sort((a, b) => a.serverNumber - b.serverNumber)
-                  .map((server) => (
+                  .map((servers) => (
                     <button
                       className="bg-[#282828] py-4 px-3 md:px-5 flex mb-1 w-full items-center justify-between rounded-lg"
-                      key={server._id || servers.serverNumber}
+                      key={ servers.serverNumber}
                       disabled={loading}
-                      onClick={() => handleServiceButtonClick(server.serverNumber)}
+                      onClick={() => handleServiceButtonClick(servers.serverNumber)}
                     >
                       <h3 className="capitalize font-medium flex flex-col items-start">
-                        Server {server.serverNumber}
+                        Server {servers.serverNumber}
                         
-                        <span className="text-sm text-gray-400">{server.otp}</span>
+                        <span className="text-sm text-gray-400">{servers.otp}</span>
                       </h3>
                       <div className="flex items-center">
                       <Icon.indianRupee className="w-4 h-4" />
-                        <p className="text-base">{formatPrice(server.price)}</p>
+                        <p className="text-base">{formatPrice(servers.price)}</p>
                         
                       </div>
                       
