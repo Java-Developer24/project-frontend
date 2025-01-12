@@ -118,12 +118,12 @@ const Header = () => {
                 onClose={toggleSheet}
                 from="left"
               >
-                {/* <SheetHeader className={"hidden"}>
+                <SheetHeader className={"hidden"}>
                   <SheetTitle>Navigation Sidebar</SheetTitle>
                   <SheetDescription>
                     This is for mobile view navigation.
                   </SheetDescription>
-                </SheetHeader> */}
+                </SheetHeader>
                 <nav className="flex gap-6 flex-wrap flex-col items-start text-base pt-[4rem]">
                   <Link
                     to="/"
