@@ -424,7 +424,7 @@ const NumberTable = ({ data, currentPage, limit }) => {
               <td className="p-2 font-normal text-sm">
                 {(currentPage - 1) * limit + index + 1}
               </td>
-              <td className="p-2 font-normal text-sm">{entry._id}</td>
+              <td className="p-2 font-normal text-sm">{entry.id}</td>
               <td className="p-2 font-normal text-sm">{entry.number}</td>
               <td className="p-2 font-normal text-sm max-w-[400px]" style={{ wordBreak: 'break-word' }}>
                 {entry.otps && entry.otps[0] && entry.otps[0].message}
@@ -524,7 +524,7 @@ const NumberTabelMob = ({ data, currentPage, limit }) => {
                   style={wrapStyle}
                 >
                   
-                  {item._id}
+                  {item.id}
                 </td>
               </tr>
               <tr>
@@ -562,7 +562,10 @@ const NumberTabelMob = ({ data, currentPage, limit }) => {
                   className="border-b-2 border-[#949494] p-3"
                   style={wrapStyle}
                 >
-                   {moment(item.date, "YYYY/MM/DDTHH:mm:ss A").isValid()? moment(item.date, "YYYY/MM/DDTHH:mm:ss A").format("YYYY/MM/DD hh:mm:ss A")    : "Invalid Date"}
+                 {moment(item.date_time, "DD/MM/YYYY HH:mm A").isValid() 
+  ? moment(item.date_time, "DD/MM/YYYY HH:mm A").format("YYYY/MM/DD hh:mm:ss A") 
+  : "Invalid Date"}
+
                 </td>
               </tr>
               <tr>

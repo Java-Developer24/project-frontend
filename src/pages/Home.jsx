@@ -111,7 +111,7 @@ const Home = ({ serviceData }) => {
       const getNumberRequest = async () => {
         try {
           await axios.get(
-            `/api/service/get-number?api_key=${apiKey}&servicecode=${service.name}&server=${serverNumber}&otpType=${otpType}`
+            `/api/service/get-number?api_key=${apiKey}&servicecode=${service.name}&server=${serverNumber}`
           );
           resolve();
         } catch (error) {
