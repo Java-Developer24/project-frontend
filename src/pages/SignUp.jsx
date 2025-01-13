@@ -220,7 +220,9 @@ const SignUp = () => {
                 isLoading={isLoading}
                 disabled={
                   !captchaValue ||
+                  (captchaValue && isLoading) ||
                   isLoading ||
+                  !email.value||!password.value||!confirmPassword.value||
                   email.error ||
                   password.error ||
                   confirmPassword.error
