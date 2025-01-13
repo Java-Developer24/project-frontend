@@ -37,9 +37,9 @@ const Header = () => {
     { to: "/", text: "Home" },
     { to: "/recharge", text: "Recharge" },
     { to: "/history", text: "History" },
-    // { to: "http://t.me/paidsms_support", text: "Contact Us" },
+    { to: "http://t.me/paidsms_support", text: "Contact Us" },
     { to: "/about", text: "About" },
-    // { to: "https://t.me/paidsms_official", text: "Join Channel" },
+    { to: "https://t.me/paidsms_official", text: "Join Channel" },
     { to: "/my-orders", text: "My Orders" },
     { to: "/api", text: "Api" },
     { to: "/check-otp", text: "Check Otp" },
@@ -49,8 +49,8 @@ const Header = () => {
     { to: "/", text: "Home" },
     { to: "/login", text: "Log-in" },
     { to: "/signup", text: "Sign Up" },
-    // { to: "http://t.me/paidsms_support", text: "Contact Us" },
-    // { to: "https://t.me/paidsms_official", text: "Join Channel" },
+    { to: "http://t.me/paidsms_support", text: "Contact Us" },
+    { to: "https://t.me/paidsms_official", text: "Join Channel" },
     { to: "/about", text: "About" },
   ];
 
@@ -134,7 +134,7 @@ const Header = () => {
                     <Icon.home className="w-4 h-4 text-primary" />
                     Home
                   </Link>
-                  {/* <Link
+                  <Link
                     to="http://t.me/paidsms_support"
                     className={`flex gap-2 w-full items-center font-normal text-[#9E9E9E] transition-colors duration-200 ease-in-out ${
                       pathname === "/contact"
@@ -155,7 +155,7 @@ const Header = () => {
                   >
                     <Icon.joinChannel className="w-4 h-4 text-primary" />
                     Join Channel
-                  </Link> */}
+                  </Link>
                   <Link
                     to="/about"
                     className={`flex gap-2 w-full items-center font-normal text-[#9E9E9E] transition-colors duration-200 ease-in-out ${
@@ -274,7 +274,7 @@ const Header = () => {
                     <Icon.history className="w-4 h-4 text-primary" />
                     History
                   </Link>
-                  {/* <Link
+                  <Link
                     to="http://t.me/paidsms_support"
                     className={`flex gap-2 w-full items-center font-normal text-[#9E9E9E] transition-colors duration-200 ease-in-out ${
                       pathname === "/contact"
@@ -295,7 +295,7 @@ const Header = () => {
                   >
                     <Icon.joinChannel className="w-4 h-4 text-primary fill-primary" />
                     Join Channel
-                  </Link> */}
+                  </Link>
                   <Link
                     to="/my-orders"
                     className={`flex gap-2 w-full items-center font-normal text-[#9E9E9E] transition-colors duration-200 ease-in-out ${

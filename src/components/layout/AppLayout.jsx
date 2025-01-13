@@ -1,6 +1,6 @@
 import React from "react";
 import Header from "./Header";
-import Footer from "./Footer";
+
 import { Toaster } from "react-hot-toast";
 
 const AppLayout = () => (WrappedComponent) => {
@@ -12,7 +12,7 @@ const AppLayout = () => (WrappedComponent) => {
         <div className="md:container px-[1rem] flex-grow">
           <WrappedComponent {...props} />
         </div>
-        <Footer />
+       
       </div>
     );
   };

@@ -41,9 +41,13 @@ const GetNumber = () => {
 
   useEffect(() => {
     if (user) {
-      fetchOrdersAndTransactions();
+      const fetchOrders = setInterval(() => {
+        fetchOrdersAndTransactions();
+      }, 5000); // Poll every 5 seconds
+      return () => clearInterval(fetchOrders);
     }
   }, [user]);
+  
 
 
 
