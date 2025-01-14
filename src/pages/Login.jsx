@@ -378,14 +378,14 @@ const Login = () => {
                 </div>
 
                 <div className="flex justify-center mb-4 mt-8">
-                {/* <Turnstile
+                <Turnstile
                 
             sitekey="0x4AAAAAAA1Y9hSf6wBjYC09" // Replace with your site key
             onVerify={(token) => {
               // console.log("Captcha token:", token);
               setCaptchaValue(token);
             }} // Store the CAPTCHA token
-          /> */}
+          />
                   {/* <ReCAPTCHA
                     theme="dark"
                     className="scale-[0.85] md:transform-none"
