@@ -245,7 +245,7 @@ const Login = () => {
     e.preventDefault();
   
     // Validate email, password, and captchaValue
-    if (!emailAdd?.value || !password?.value || !captchaValue) {
+    if (!emailAdd?.value || !password?.value ) {
       toast.error("Please fill out all fields and complete the CAPTCHA");
       return;
     }
@@ -378,14 +378,14 @@ const Login = () => {
                 </div>
 
                 <div className="flex justify-center mb-4 mt-8">
-                <Turnstile
+                {/* <Turnstile
                 
             sitekey="0x4AAAAAAA1Y9hSf6wBjYC09" // Replace with your site key
             onVerify={(token) => {
               // console.log("Captcha token:", token);
               setCaptchaValue(token);
             }} // Store the CAPTCHA token
-          />
+          /> */}
                   {/* <ReCAPTCHA
                     theme="dark"
                     className="scale-[0.85] md:transform-none"
@@ -400,8 +400,8 @@ const Login = () => {
                   isLoading={isLoading}
                   className="w-full text-sm font-normal mb-4"
                   disabled={
-                    !captchaValue ||
-                    (captchaValue && isLoading) ||
+                    // !captchaValue ||
+                    // (captchaValue && isLoading) ||
                     !emailAdd.value ||
                     !password.value
                   }

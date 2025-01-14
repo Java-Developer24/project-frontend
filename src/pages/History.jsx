@@ -99,15 +99,15 @@ const History = () => {
       const displayEntry =
         cancelledEntries.length > 0
           ? cancelledEntries[0]
-          : finishedEntries.find((entry) => entry.otps && entry.otps.length > 0) ||
+          : finishedEntries.find((entry) => entry.otp && entry.otp.length > 0) ||
           finishedEntries[0];
 
       return {
         ...displayEntry,
-        otps:
+        otp:
   finishedEntries
-    .filter((entry) => entry.otps && entry.otps.length > 0)  // Make sure otps is non-empty
-    .map((entry) => entry.otps[0].message)  // Assuming you want the OTP message
+    .filter((entry) => entry.otp && entry.otp.length > 0)  // Make sure otps is non-empty
+    .map((entry) => entry.otp)  // Assuming you want the OTP message
     .join(`<br><br>`) || "-",
 
       };
@@ -427,7 +427,7 @@ const NumberTable = ({ data, currentPage, limit }) => {
               <td className="p-2 font-normal text-sm">{entry.id}</td>
               <td className="p-2 font-normal text-sm">{entry.number}</td>
               <td className="p-2 font-normal text-sm max-w-[400px]" style={{ wordBreak: 'break-word' }}>
-                {entry.otps && entry.otps[0] && entry.otps[0].message}
+                {entry.otp && entry.otp[0] && entry.otp}
               </td>
               <td className="p-2 font-normal text-sm">
                 {moment(entry.date, "YYYY/MM/DDTHH:mm:ss A").isValid()
@@ -546,8 +546,8 @@ const NumberTabelMob = ({ data, currentPage, limit }) => {
     className="border-b-2 border-[#949494] p-3"
     style={wrapStyle}
   >
-    {item.otps ? (
-      <span dangerouslySetInnerHTML={{ __html: item.otps }} />
+    {item.otp ? (
+      <span dangerouslySetInnerHTML={{ __html: item.otp }} />
     ) : (
       <span>N/A</span>
     )}

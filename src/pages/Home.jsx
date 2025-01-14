@@ -161,12 +161,14 @@ const Home = ({ serviceData }) => {
   
   
   return (
-    <div className="h-[calc(100dvh-4rem)] flex flex-col items-center justify-center">
-     <div className="w-full mt-2 mb-2">
-      {bannerInfo?.message && (
+    <div className="h-[calc(100dvh-2rem)] flex flex-col items-center justify-center">
+   <div>
+    {/* {bannerInfo?.message && (
         <Banner  message={bannerInfo.message} type={bannerInfo.type} />
-      )}
-      </div>
+      )} */}
+   </div>
+      
+    
     
       
       <div className="w-full flex justify-center mb-8">

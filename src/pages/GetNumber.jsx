@@ -39,42 +39,38 @@ const GetNumber = () => {
   };
   
 
+  // useEffect(() => {
+  //   if (user) {
+  //     const fetchOrders = setInterval(() => {
+  //       fetchOrdersAndTransactions();
+  //     }, 5000); // Poll every 5 seconds
+  //     return () => clearInterval(fetchOrders);
+  //   }
+  // }, [user]);
   useEffect(() => {
     if (user) {
-      const fetchOrders = setInterval(() => {
-        fetchOrdersAndTransactions();
-      }, 5000); // Poll every 5 seconds
-      return () => clearInterval(fetchOrders);
+      fetchOrdersAndTransactions();
     }
   }, [user]);
   
 
+const getOTPFromTransaction = (numberId) => {
+  const relatedTransactions = transactions.filter(
+    (transaction) => transaction.id === numberId
+  );
 
+  if (relatedTransactions.length === 0) {
+    return ["Waiting for SMS"];
+  }
 
-  const getOTPFromTransaction = (number) => { // Use 'number' here
-        console.log('Fetching OTP for number:', number);
-        const relatedTransactions = transactions.filter(
-            (transaction) => transaction.number === number // Compare numbers
-        );
-        console.log('Related Transactions:', relatedTransactions);
+  const otpList = relatedTransactions
+    .map((transaction) => transaction.otp)
+    .filter((otp) => otp !== null);
 
-        if (relatedTransactions.length === 0) {
-            return ["Waiting for SMS"];
-        }
+  // Return all unique OTPs in an array
+  return otpList.length > 0 ? Array.from(new Set(otpList)) : ["Waiting for SMS"];
+};
 
-        const otpList = relatedTransactions
-            .map((transaction) => transaction.otps)
-            .filter((otps) => otps && otps.length > 0);
-
-        if (otpList.length === 0) {
-            return ["Waiting for SMS"];
-        }
-
-        return otpList.flatMap((otpArray) => otpArray.map((otp) => otp.message));
-    };
-  
-
-  
 
   const calculateRemainingTime = (expirationTime) => {
     const now = new Date();
@@ -269,8 +265,8 @@ console.log(orders)
         </div>
       ) : (
         orders.map((order) => {
-          const otps = getOTPFromTransaction(order.numberId); // Get the OTPs for the order
-          const hasOtp = otps.some((otp) => otp !== "Waiting for SMS"
+          const hasOtp = getOTPFromTransaction(order.numberId).some(
+            (otp) => otp !== "Waiting for SMS"
           );
 
           return (
@@ -328,14 +324,18 @@ console.log(orders)
                 </div>
                 <div className="w-full flex bg-[#444444] border-2 border-[#888888] rounded-2xl items-center justify-center max-h-[100px] overflow-y-scroll hide-scrollbar">
                   <div className="w-full h-full flex flex-col items-center">
-                    {otps.map((otpMessage, index) => (
-                      <React.Fragment key={index}>
-                        <div className="bg-transparent py-4 px-5 flex w-full items-center justify-center">
-                          <h3 className="font-normal text-sm">{otpMessage}</h3>
-                        </div>
-                        {index < otps.length - 1 && <hr className="border-[#888888] border w-full" />}
-                      </React.Fragment>
-                    ))}
+                  {getOTPFromTransaction(order.numberId).map(
+                      (otp, index, arr) => (
+                        <React.Fragment key={index}>
+                          <div className="bg-transparent py-4 px-5 flex w-full items-center justify-center">
+                            <h3 className="font-normal text-sm">{otp}</h3>
+                          </div>
+                          {index < arr.length - 1 && (
+                            <hr className="border-[#888888] border w-full" />
+                          )}
+                        </React.Fragment>
+                      )
+                    )}
                   </div>
                 </div>
 
