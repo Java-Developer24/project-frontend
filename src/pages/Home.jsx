@@ -63,7 +63,7 @@ const Home = ({ serviceData }) => {
     // If no results found, return the "Any Other" service
     if (filtered.length === 0) {
       const anyOtherService = serviceData.find(service => 
-        service.name.toLowerCase() === "anyother"
+        service.name.toLowerCase() === "anyOther"
       );
       return anyOtherService ? [anyOtherService] : [];
     }
@@ -155,34 +155,34 @@ const Home = ({ serviceData }) => {
   );
 
   return (
-    <div className="min-h-[calc(100dvh-6rem)] flex flex-col items-stretch overflow-hidden">
+    <div className="h-[calc(100dvh-6rem)] flex flex-col items-center justify-center overflow-hidden">
       {/* Banner */}
-      <div className="w-full">
+      <div className="w-full min-h-[50px]">
         {bannerInfo?.message && (
           <Banner message={bannerInfo.message} type={bannerInfo.type} />
         )}
       </div>
 
-      <div className="w-full flex-grow flex justify-center px-2 py-2 md:px-4 md:py-4">
-        <div className="w-full max-w-[980px] flex flex-col items-center bg-[#121315] rounded-2xl p-2 sm:p-3">
-          <div className="w-full flex bg-[#18191c] rounded-xl items-center h-[40px] sm:h-[50px] mb-2 px-2 sm:px-3">
-            <Icon.search className="text-[24px] text-primary" />
+      <div className="w-full flex justify-center px-4 md:px-0">
+        <div className="w-full max-w-[980px] flex flex-col items-center bg-[#121315] rounded-2xl p-3">
+          <div className="w-full flex bg-[#18191c] rounded-2xl items-center h-[60px] mb-3 px-3">
+            <Icon.search className="text-[30px] text-primary" />
             <input
               type="text"
               placeholder="Search..."
               value={searchQuery}
               onChange={handleSearchChange}
               disabled={loading}
-              className="w-full h-[40px] ml-2 bg-transparent border-0 text-base text-white placeholder:text-primary focus:outline-none"
+              className="w-full h-[50px] ml-2 bg-transparent border-0 text-base text-white placeholder:text-primary focus:outline-none"
             />
-            {searchQuery !== "" && (
-              <Icon.circleX className="text-primary cursor-pointer text-[20px]" onClick={clearSearch} />
-            )}
+            {searchQuery !== "" ? (
+              <Icon.circleX className="text-primary cursor-pointer" onClick={clearSearch} />
+            ) : null}
           </div>
 
           {/* Service List */}
-          <div className="flex flex-col w-full flex-grow overflow-y-auto hide-scrollbar mt-1">
-            <h5 className="p-2 text-sm font-medium">{selectedService ? "Select Server" : "Services"}</h5>
+          <div className="flex flex-col w-full h-[450px] md:h-[460px] overflow-y-auto hide-scrollbar">
+            <h5 className="p-3">{selectedService ? "Select Server" : "Services"}</h5>
             <div className="rounded-2xl flex flex-col w-full overflow-y-auto">
               {selectedService ? (
                 selectedService.servers
@@ -190,36 +190,36 @@ const Home = ({ serviceData }) => {
                   .map((servers) => (
                     <button
                       key={servers.serverNumber}
-                      className="bg-[#282828] py-2 px-2 sm:py-3 sm:px-3 flex mb-1 w-full items-center justify-between rounded-lg text-sm"
+                      className="bg-[#282828] py-4 px-3 md:px-5 flex mb-1 w-full items-center justify-between rounded-lg"
                       disabled={loading}
                       onClick={() => handleServiceButtonClick(servers.serverNumber)}
                     >
-                      <h3 className="capitalize font-medium flex flex-col items-start text-sm">
+                      <h3 className="capitalize font-medium flex flex-col items-start">
                         Server {servers.serverNumber}
-                        <span className="text-xs text-gray-400">{servers.otp}</span>
+                        <span className="text-sm text-gray-400">{servers.otp}</span>
                       </h3>
                       <div className="flex items-center">
-                        <Icon.indianRupee className="w-3 h-3" />
-                        <p className="text-sm">{formatPrice(servers.price)}</p>
+                        <Icon.indianRupee className="w-4 h-4" />
+                        <p className="text-base">{formatPrice(servers.price)}</p>
                       </div>
                     </button>
                   ))
               ) : filteredServices.length > 0 ? (
                 filteredServices.map((i) => (
                   <button
-                    className="bg-[#282828] py-2 px-2 sm:py-3 sm:px-3 flex mb-1 w-full items-center justify-between rounded-lg text-sm"
+                    className="bg-[#282828] py-4 px-3 md:px-5 flex mb-1 w-full items-center justify-between rounded-lg"
                     key={i._id || i.name}
                     onClick={() => handleServiceClick(i)}
                   >
-                    <h3 className="capitalize font-medium text-start text-sm">{i.name}</h3>
+                    <h3 className="capitalize font-medium text-start">{i.name}</h3>
                   </button>
                 ))
               ) : (
                 <button
-                  className="bg-[#282828] py-2 px-2 sm:py-3 sm:px-3 flex mb-1 w-full items-center justify-between rounded-lg text-sm"
+                  className="bg-[#282828] py-4 px-3 md:px-5 flex mb-1 w-full items-center justify-between rounded-lg"
                   onClick={() => handleServiceClick(anyOtherService)}
                 >
-                  <h3 className="capitalize font-medium text-sm">{anyOtherService.name}</h3>
+                  <h3 className="capitalize font-medium">{anyOtherService.name}</h3>
                 </button>
               )}
             </div>
@@ -238,4 +238,3 @@ const Home = ({ serviceData }) => {
 };
 
 export default AppLayout()(Home);
-

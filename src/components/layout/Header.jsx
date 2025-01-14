@@ -69,17 +69,17 @@ const Header = () => {
   };
 
   return (
-    <header className="top-0 inset-x-0 h-[3rem] py-4   bg-black lg:py-4  sticky">
-      <div className="md:container px-[1rem] h-full mx-auto flex items-center justify-between gap-2">
+    <header className="sticky top-0 z-50 bg-black h-12 flex items-center">
+      <div className="md:container px-4 h-full mx-auto flex items-center justify-between">
         <Link
           to="/"
           className="hidden lg:flex title-font font-medium items-center"
         >
-          <img src={Logo} alt="logo" className="w-[100px] md:w-[150px]" />
+          <img src={Logo} alt="logo" className="w-[80px] md:w-[120px]" />
         </Link>
         {!user ? (
           <>
-            <nav className="hidden lg:flex gap-10 flex-wrap items-center pl-10 text-base justify-center">
+            <nav className="hidden lg:flex gap-6 items-center text-base justify-center">
               {logoutlinks.map((link, index) => (
                 <Link
                   key={index}
@@ -108,7 +108,7 @@ const Header = () => {
                 onClick={toggleSheet}
                 className="w-fit p-0 bg-transparent hover:bg-transparent m-0 lg:hidden inline-block"
               >
-                <Icon.menu className="text-primary" />
+                <Icon.menu className="text-primary w-6 h-6" />
               </Button>
               {/* </SheetTrigger> */}
               <SheetComponent
@@ -118,7 +118,7 @@ const Header = () => {
                 onClose={toggleSheet}
                 from="left"
               >
-{/*                 <SheetHeader className={"hidden"}>
+                {/* <SheetHeader className={"hidden"}>
                   <SheetTitle>Navigation Sidebar</SheetTitle>
                   <SheetDescription>
                     This is for mobile view navigation.
@@ -196,7 +196,7 @@ const Header = () => {
           </>
         ) : (
           <>
-            <nav className="hidden lg:flex gap-8 flex-wrap items-center text-base justify-center">
+            <nav className="hidden lg:flex gap-6 items-center text-base justify-center">
               {links.map((link, index) => (
                 <Link
                   key={index}
@@ -225,7 +225,7 @@ const Header = () => {
                 onClick={toggleSheetLogin}
                 className="w-fit p-0 bg-transparent hover:bg-transparent m-0 lg:hidden inline-block"
               >
-                <Icon.menu className="text-primary" />
+                <Icon.menu className="text-primary w-6 h-6" />
               </Button>
               {/* </SheetTrigger> */}
               <SheetComponent
@@ -343,17 +343,17 @@ const Header = () => {
                 </nav>
               </SheetComponent>
               <div className="flex items-center gap-2">
-                <div className="flex items-center rounded-full border-primary border-2 p-1">
+                <div className="flex items-center rounded-full border-primary border px-2 py-1">
                   <Icon.indianRupee className="w-3 h-3" />
-                  <p className="text-xs">{balance || "0"}</p>
+                  <p className="text-xs ml-1">{balance || "0"}</p>
                 </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
-                      className="py-0 px-2 !text-[18px] font-normal rounded-full hover:text-primary focus:outline-none ease-in-out !bg-transparent"
+                      className="p-1 rounded-full hover:text-primary focus:outline-none ease-in-out !bg-transparent"
                       onClick={handleToggleDropdown}
                     >
-                      <Icon.userAvatar className="w-7 h-7 text-primary" />
+                      <Icon.userAvatar className="w-6 h-6 text-primary" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
@@ -390,13 +390,13 @@ const Header = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
-                    className="py-0 px-0 ml-5 !text-[18px] font-normal rounded-full hover:text-primary focus:outline-none ease-in-out !bg-transparent"
+                    className="p-1 rounded-full hover:text-primary focus:outline-none ease-in-out !bg-transparent"
                     onClick={handleToggleDropdown}
                   >
-                    <Icon.userAvatar className="w-6 h-6" />
+                    <Icon.userAvatar className="w-6 h-6 text-primary" />
                     <Icon.arrowUp
                       className={cn(
-                        toggleDropdown ? "rotate-180" : "rotate-180",
+                        toggleDropdown ? "rotate-180" : "rotate-0",
                         "w-5 h-5 transition-transform duration-150"
                       )}
                     />
@@ -432,3 +432,4 @@ const Header = () => {
 };
 
 export default Header;
+
