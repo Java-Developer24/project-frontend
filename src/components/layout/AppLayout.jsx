@@ -9,7 +9,7 @@ const AppLayout = () => (WrappedComponent) => {
       <div className="min-h-screen flex flex-col">
         <Toaster position="bottom-right" reverseOrder={false} />
         <Header />
-        <div className="md:container px-[1rem] flex-grow">
+        <div className="md:container px-[1rem] ">
           <WrappedComponent {...props} />
         </div>
        
