@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icons";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import ReCAPTCHA from "react-google-recaptcha";
 import Turnstile, { useTurnstile } from "react-turnstile";
@@ -297,18 +297,18 @@ const Login = () => {
  
 
   return (
-    <div className="h-[calc(100dvh-6rem)] flex items-center justify-center">
-      <Card className="bg-[#121315] w-full max-w-md rounded-lg border-none dark">
+    <div className="min-h-[calc(100dvh-6rem)] flex flex-col items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
+      <Card className="bg-[#121315] w-full sm:max-w-md rounded-lg border-none dark">
         <CardHeader>
           <CardTitle className="text-center font-medium">
             {forgotPass ? (showOTP ? "Verify OTP" : "Reset Password") : "Login"}
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-4 md:p-6 !pt-0">
+        <CardContent className="p-4 sm:p-6 !pt-0">
           {!forgotPass ? (
             <>
               <form onSubmit={handleSubmit}>
-                <div className="space-y-4">
+                <div className="space-y-4 mb-4">
                   <div>
                     <Label
                       htmlFor="email"
@@ -377,31 +377,22 @@ const Login = () => {
                   </div>
                 </div>
 
-                <div className="flex justify-center mb-4 mt-8">
-                <Turnstile
-                
-            sitekey="0x4AAAAAAA1Y9hSf6wBjYC09" // Replace with your site key
-            onVerify={(token) => {
-              // console.log("Captcha token:", token);
-              setCaptchaValue(token);
-            }} // Store the CAPTCHA token
-          />
-                  {/* <ReCAPTCHA
-                    theme="dark"
-                    className="scale-[0.85] md:transform-none"
-                    sitekey="6LeAfAoqAAAAAPKwGgbxZpBXsBZ4hZ1iazAvta6e"
-                    onChange={(value) => setCaptchaValue(value)}
-                  /> */}
+                <div className="flex justify-center mb-4 mt-6 overflow-x-auto">
+                  <Turnstile
+                    sitekey="0x4AAAAAAA1Y9hSf6wBjYC09"
+                    onVerify={(token) => {
+                      setCaptchaValue(token);
+                    }}
+                    className="transform scale-90 sm:scale-100"
+                  />
                 </div>
 
                 <Button
                   type="submit"
                   variant="login"
                   isLoading={isLoading}
-                  className="w-full text-sm font-normal mb-4"
+                  className="w-full text-sm font-normal mb-4 py-2 h-12"
                   disabled={
-                    // !captchaValue ||
-                    // (captchaValue && isLoading) ||
                     !emailAdd.value ||
                     !password.value
                   }
@@ -412,9 +403,9 @@ const Login = () => {
                   onClick={handleGoogleLogin}
                   variant="outline"
                   type="button"
-                  className="w-full text-sm"
+                  className="w-full text-sm py-2 h-12"
                 >
-                  <Icon.google className="w-4 h-4 mr-1" /> Continue with Google
+                  <Icon.google className="w-4 h-4 mr-2" /> Continue with Google
                 </Button>
               </form>
 
@@ -431,7 +422,7 @@ const Login = () => {
             </>
           ) : !emailSent ? (
             <form onSubmit={handleForgotPasswordSubmit}>
-              <div className="space-y-4">
+              <div className="space-y-4 mb-4">
                 <div>
                   <Label
                     htmlFor="email"
@@ -456,7 +447,7 @@ const Login = () => {
 
               <Button
                 type="submit"
-                className="w-full bg-primary text-white font-medium py-2 rounded-lg mt-8"
+                className="w-full bg-primary text-white font-medium py-2 rounded-lg mt-4 h-12"
                 isLoading={isLoading}
                 disabled={email.error || isLoading || !email.value}
               >
@@ -465,7 +456,7 @@ const Login = () => {
             </form>
           ) : showOTP ? (
             <form onSubmit={handleOtpSubmit}>
-              <div className="flex items-center justify-center gap-4 flex-col ">
+              <div className="flex items-center justify-center gap-2 flex-col sm:flex-row">
                 <Otp length={6} otp={otp} onOtpChange={handleOtpChange} />
                 <div className="flex justify-center">
                   <Button
@@ -479,7 +470,7 @@ const Login = () => {
                 </div>
                 <Button
                   type="submit"
-                  className="w-full bg-primary text-white font-medium py-2 rounded-lg my-4"
+                  className="w-full bg-primary text-white font-medium py-2 rounded-lg my-4 h-12"
                   disabled={otp.length !== 6 || isLoading}
                   isLoading={isLoading}
                 >
@@ -489,7 +480,7 @@ const Login = () => {
             </form>
           ) : (
             <form onSubmit={handlePasswordChangeSubmit}>
-              <div className="space-y-4">
+              <div className="space-y-4 mb-4">
                 <div>
                   <Label
                     htmlFor="new-password"
@@ -564,7 +555,7 @@ const Login = () => {
 
               <Button
                 type="submit"
-                className="w-full bg-primary text-white font-medium py-2 rounded-lg mt-8"
+                className="w-full bg-primary text-white font-medium py-2 rounded-lg mt-4 h-12"
                 disabled={
                   !forgotPassword.value ||
                   !confirmPassword.value ||
@@ -585,3 +576,4 @@ const Login = () => {
 };
 
 export default AppLayout()(Login);
+

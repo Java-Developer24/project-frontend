@@ -19,8 +19,6 @@ const Home = ({ serviceData }) => {
   const [showDisclaimer, setShowDisclaimer] = useState(false);
   const [selectedServer, setSelectedServer] = useState(null);
 
-
-
   // Fetch banner and disclaimer info
   useEffect(() => {
     const fetchInfo = async () => {
@@ -39,11 +37,11 @@ const Home = ({ serviceData }) => {
 
     fetchInfo();
   }, []);
+
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value.toLowerCase());    
     setSelectedService(null);
   };
-  
 
   const handleServiceClick = (service) => {
     if (!service || !service.name) {
@@ -72,13 +70,13 @@ const Home = ({ serviceData }) => {
     
     return filtered;
   };
+
   const filteredServices = Array.isArray(serviceData) ? getFilteredServices() : [];
 
   const clearSearch = () => {
     setSearchQuery("");
     setSelectedService(null);
   };
-
 
   const handleServiceButtonClick = async (serverNumber) => {
     if (!user) {
@@ -152,29 +150,22 @@ const Home = ({ serviceData }) => {
     return `${formattedInteger}.${(decimalPart || "00").padEnd(2, "0")}`;
   };
 
-
-
   const anyOtherService = serviceData.find(
     (service) => service.name.toLowerCase() === "anyother"
   );
-  
-  
-  
+
   return (
-    <div className="h-[calc(100dvh-6rem)]  flex flex-col items-center justify-center overflow-hidden hide-scrollbar">
-   
-   {/* Reserve space for the banner with a minimum height */}
-   <div className="pb-2 min-h-[50px]"> {/* Adjust 80px as per your banner height */}
-      {bannerInfo?.message && (
-        <Banner message={bannerInfo.message} type={bannerInfo.type} />
-      )}
+    <div className="h-[calc(100dvh-6rem)] flex flex-col items-center justify-center overflow-hidden">
+      {/* Banner */}
+      <div className="w-full min-h-[50px]">
+        {bannerInfo?.message && (
+          <Banner message={bannerInfo.message} type={bannerInfo.type} />
+        )}
       </div>
-    
-      
-      <div className="w-full flex justify-center ">
-        
-        <div className="w-full max-w-[980px] flex flex-col items-center bg-[#121315] rounded-2xl p-3 sticky ">
-          <div className="w-full flex bg-[#18191c] rounded-2xl items-center h-[60px] mb-3 px-3 ">
+
+      <div className="w-full flex justify-center px-4 md:px-0">
+        <div className="w-full max-w-[980px] flex flex-col items-center bg-[#121315] rounded-2xl p-3">
+          <div className="w-full flex bg-[#18191c] rounded-2xl items-center h-[60px] mb-3 px-3">
             <Icon.search className="text-[30px] text-primary" />
             <input
               type="text"
@@ -186,35 +177,31 @@ const Home = ({ serviceData }) => {
             />
             {searchQuery !== "" ? (
               <Icon.circleX className="text-primary cursor-pointer" onClick={clearSearch} />
-            ) : (
-              ""
-            )}
+            ) : null}
           </div>
-          <div className="flex flex-col w-full h-[450px] md:h-[460px]">
+
+          {/* Service List */}
+          <div className="flex flex-col w-full h-[450px] md:h-[460px] overflow-y-auto hide-scrollbar">
             <h5 className="p-3">{selectedService ? "Select Server" : "Services"}</h5>
-            <div className="rounded-2xl flex flex-col overflow-y-auto hide-scrollbar h-full">
+            <div className="rounded-2xl flex flex-col w-full overflow-y-auto">
               {selectedService ? (
                 selectedService.servers
                   .sort((a, b) => a.serverNumber - b.serverNumber)
                   .map((servers) => (
                     <button
+                      key={servers.serverNumber}
                       className="bg-[#282828] py-4 px-3 md:px-5 flex mb-1 w-full items-center justify-between rounded-lg"
-                      key={ servers.serverNumber}
                       disabled={loading}
                       onClick={() => handleServiceButtonClick(servers.serverNumber)}
                     >
                       <h3 className="capitalize font-medium flex flex-col items-start">
                         Server {servers.serverNumber}
-                        
                         <span className="text-sm text-gray-400">{servers.otp}</span>
                       </h3>
                       <div className="flex items-center">
-                      <Icon.indianRupee className="w-4 h-4" />
+                        <Icon.indianRupee className="w-4 h-4" />
                         <p className="text-base">{formatPrice(servers.price)}</p>
-                        
                       </div>
-                      
-                   
                     </button>
                   ))
               ) : filteredServices.length > 0 ? (
@@ -227,47 +214,27 @@ const Home = ({ serviceData }) => {
                     <h3 className="capitalize font-medium text-start">{i.name}</h3>
                   </button>
                 ))
-              ): (
+              ) : (
                 <button
                   className="bg-[#282828] py-4 px-3 md:px-5 flex mb-1 w-full items-center justify-between rounded-lg"
                   onClick={() => handleServiceClick(anyOtherService)}
                 >
-                  <h3 className="capitalize font-medium">
-                    {anyOtherService.name}
-                  </h3>
-                  <div className="flex items-center">
-                    
-                  </div>
+                  <h3 className="capitalize font-medium">{anyOtherService.name}</h3>
                 </button>
               )}
             </div>
           </div>
+
           <PurchaseDisclaimer
-        isOpen={showDisclaimer}
-        onClose={() => setShowDisclaimer(false)}
-        onContinue={handleDisclaimerContinue}
-        disclaimerContent={disclaimerInfo?.content}
-      />
+            isOpen={showDisclaimer}
+            onClose={() => setShowDisclaimer(false)}
+            onContinue={handleDisclaimerContinue}
+            disclaimerContent={disclaimerInfo?.content}
+          />
         </div>
       </div>
-      
     </div>
   );
 };
 
 export default AppLayout()(Home);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
