@@ -54,23 +54,24 @@ const GetNumber = () => {
   }, [user]);
   
 
-const getOTPFromTransaction = (numberId) => {
-  const relatedTransactions = transactions.filter(
-    (transaction) => transaction.id === numberId
-  );
 
-  if (relatedTransactions.length === 0) {
-    return ["Waiting for SMS"];
-  }
+  const getOTPFromTransaction = (numberId) => {
+    const relatedTransactions = transactions.filter(
+      (transaction) => transaction.id === numberId
+    );
 
-  const otpList = relatedTransactions
-    .map((transaction) => transaction.otp)
-    .filter((otp) => otp !== null);
+    if (relatedTransactions.length === 0) {
+      return ["Waiting for SMS"];
+    }
 
-  // Return all unique OTPs in an array
-  return otpList.length > 0 ? Array.from(new Set(otpList)) : ["Waiting for SMS"];
-};
+    const otpList = relatedTransactions
+      .map((transaction) => transaction.otp)
+      .filter((otp) => otp !== null);
 
+    return otpList.length > 0 ? otpList : ["Waiting for SMS"];
+  };
+
+  
 
   const calculateRemainingTime = (expirationTime) => {
     const now = new Date();
@@ -265,8 +266,8 @@ console.log(orders)
         </div>
       ) : (
         orders.map((order) => {
-          const hasOtp = getOTPFromTransaction(order.numberId).some(
-            (otp) => otp !== "Waiting for SMS"
+          const otp = getOTPFromTransaction(order.numberId); // Get the OTPs for the order
+          const hasOtp = otp.some((otp) => otp !== "Waiting for SMS"
           );
 
           return (
@@ -324,7 +325,7 @@ console.log(orders)
                 </div>
                 <div className="w-full flex bg-[#444444] border-2 border-[#888888] rounded-2xl items-center justify-center max-h-[100px] overflow-y-scroll hide-scrollbar">
                   <div className="w-full h-full flex flex-col items-center">
-                  {getOTPFromTransaction(order.numberId).map(
+                   {getOTPFromTransaction(order.numberId).map(
                       (otp, index, arr) => (
                         <React.Fragment key={index}>
                           <div className="bg-transparent py-4 px-5 flex w-full items-center justify-center">

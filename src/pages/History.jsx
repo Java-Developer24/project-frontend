@@ -562,9 +562,7 @@ const NumberTabelMob = ({ data, currentPage, limit }) => {
                   className="border-b-2 border-[#949494] p-3"
                   style={wrapStyle}
                 >
-                 {moment(item.date_time, "DD/MM/YYYY HH:mm A").isValid() 
-  ? moment(item.date_time, "DD/MM/YYYY HH:mm A").format("YYYY/MM/DD hh:mm:ss A") 
-  : "Invalid Date"}
+                {item.date_time}
 
                 </td>
               </tr>
