@@ -412,9 +412,9 @@ const NumberTable = ({ data, currentPage, limit }) => {
             <th className="p-2 font-normal">Date & Time</th>
             <th className="p-2 font-normal">Service</th>
             <th className="p-2 font-normal">Server</th>
-            <th className="p-2 font-normal">Discount</th>
+            
             <th className="p-2 font-normal">Price</th>
-            <th className="p-2 font-normal">Reason</th>
+            
             <th className="p-2 font-normal">Status</th>
           </tr>
         </thead>
@@ -424,7 +424,7 @@ const NumberTable = ({ data, currentPage, limit }) => {
               <td className="p-2 font-normal text-sm">
                 {(currentPage - 1) * limit + index + 1}
               </td>
-              <td className="p-2 font-normal text-sm">{entry.id}</td>
+              <td className="p-2 font-normal text-sm">{entry.requestId}</td>
               <td className="p-2 font-normal text-sm">{entry.number}</td>
               <td className="p-2 font-normal text-sm max-w-[400px]" style={{ wordBreak: 'break-word' }}>
                 {entry.otp && entry.otp[0] && entry.otp}
@@ -436,9 +436,9 @@ const NumberTable = ({ data, currentPage, limit }) => {
               </td>
               <td className="p-2 font-normal text-sm">{entry.serviceName}</td>
               <td className="p-2 font-normal text-sm">{entry.server}</td>
-              <td className="p-2 font-normal text-sm">{entry.Discount || 0}</td>
+             
               <td className="p-2 font-normal text-sm">{getPriceDisplay(entry.price, entry.status)}</td>
-              <td className="p-2 font-normal text-sm">{entry.reason}</td>
+              
               <td className="p-2 font-normal text-sm text-teal-400">{entry.status}</td>
             </tr>
           ))}
@@ -524,7 +524,7 @@ const NumberTabelMob = ({ data, currentPage, limit }) => {
                   style={wrapStyle}
                 >
                   
-                  {item.id}
+                  {item.requestId??"N/A"}
                 </td>
               </tr>
               <tr>
@@ -588,18 +588,7 @@ const NumberTabelMob = ({ data, currentPage, limit }) => {
                   {item.server}
                 </td>
               </tr>
-              <tr>
-  <td className="border-b-2 border-[#949494] p-3 px-5 text-[#959595]">
-    Discount
-  </td>
-  <td
-    className="border-b-2 border-[#949494] p-3"
-    style={wrapStyle}
-  >
-    {item.Discount || 0}
-
-  </td>
-</tr>
+       
 
 <tr>
                 <td className="border-b-2 border-[#949494] p-3 px-5 text-[#959595]">
@@ -609,17 +598,7 @@ const NumberTabelMob = ({ data, currentPage, limit }) => {
                   {getPriceDisplay(item.price, item.status)}
                 </td>
               </tr>
-              <tr>
-                <td className="border-b-2 border-[#949494] p-3 px-5 text-[#959595]">
-                  Reason
-                </td>
-                <td
-                  className="border-b-2 border-[#949494] p-3"
-                  style={wrapStyle}
-                >
-                  {item.reason}
-                </td>
-              </tr>
+              
                <tr>
                 <td className="p-3 px-5 text-[#959595]">Status</td>
                 <td className="p-3 text-teal-400">{item.status}</td>
