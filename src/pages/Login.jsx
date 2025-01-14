@@ -297,18 +297,18 @@ const Login = () => {
  
 
   return (
-    <div className="min-h-[calc(100dvh-6rem)] flex flex-col items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
+    <div className="min-h-[calc(100dvh-6rem)] flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
       <Card className="bg-[#121315] w-full sm:max-w-md rounded-lg border-none dark">
         <CardHeader>
           <CardTitle className="text-center font-medium">
             {forgotPass ? (showOTP ? "Verify OTP" : "Reset Password") : "Login"}
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-4 sm:p-6 !pt-0">
+        <CardContent className="p-3 sm:p-4 !pt-0">
           {!forgotPass ? (
             <>
               <form onSubmit={handleSubmit}>
-                <div className="space-y-4 mb-4">
+                <div className="space-y-3 mb-4">
                   <div>
                     <Label
                       htmlFor="email"
@@ -320,7 +320,7 @@ const Login = () => {
                       id="email"
                       type="email"
                       placeholder="m@example.com"
-                      className="w-full h-12 pl-3 rounded-lg text-[#9d9d9d] placeholder-text-[#9d9d9d] bg-transparent border-[#e0effe] focus:border-none"
+                      className="w-full h-10 pl-3 rounded-lg text-[#9d9d9d] placeholder-text-[#9d9d9d] bg-transparent border-[#e0effe] focus:border-none"
                       value={emailAdd.value}
                       onChange={emailAdd.changeHandler}
                       required
@@ -343,7 +343,7 @@ const Login = () => {
                         id="password"
                         type={showPassword ? "text" : "password"}
                         placeholder="Enter your password"
-                        className="w-full h-12 pl-3 pr-10 rounded-lg text-[#9d9d9d] placeholder-text-[#9d9d9d] bg-transparent border-[#e0effe] focus:border-none"
+                        className="w-full h-10 pl-3 pr-10 rounded-lg text-[#9d9d9d] placeholder-text-[#9d9d9d] bg-transparent border-[#e0effe] focus:border-none"
                         value={password.value}
                         onChange={password.changeHandler}
                         required
@@ -391,7 +391,7 @@ const Login = () => {
                   type="submit"
                   variant="login"
                   isLoading={isLoading}
-                  className="w-full text-sm font-normal mb-4 py-2 h-12"
+                  className="w-full text-sm font-normal mb-4 py-2 h-10"
                   disabled={
                     !emailAdd.value ||
                     !password.value
@@ -403,13 +403,13 @@ const Login = () => {
                   onClick={handleGoogleLogin}
                   variant="outline"
                   type="button"
-                  className="w-full text-sm py-2 h-12"
+                  className="w-full text-sm py-2 h-10"
                 >
                   <Icon.google className="w-4 h-4 mr-2" /> Continue with Google
                 </Button>
               </form>
 
-              <div className="mt-4 text-center text-sm text-[#BEBEBF] font-normal">
+              <div className="mt-3 text-center text-sm text-[#BEBEBF] font-normal">
                 Don&apos;t have an account?{" "}
                 <Button
                   variant="link"
@@ -422,7 +422,7 @@ const Login = () => {
             </>
           ) : !emailSent ? (
             <form onSubmit={handleForgotPasswordSubmit}>
-              <div className="space-y-4 mb-4">
+              <div className="space-y-3 mb-4">
                 <div>
                   <Label
                     htmlFor="email"
@@ -434,7 +434,7 @@ const Login = () => {
                     id="email"
                     type="email"
                     placeholder="m@example.com"
-                    className="w-full h-12 pl-3 rounded-lg text-[#9d9d9d] placeholder-text-[#9d9d9d] bg-transparent border-[#e0effe] focus:border-none"
+                    className="w-full h-10 pl-3 rounded-lg text-[#9d9d9d] placeholder-text-[#9d9d9d] bg-transparent border-[#e0effe] focus:border-none"
                     value={email.value}
                     onChange={email.changeHandler}
                     required
@@ -447,7 +447,7 @@ const Login = () => {
 
               <Button
                 type="submit"
-                className="w-full bg-primary text-white font-medium py-2 rounded-lg mt-4 h-12"
+                className="w-full bg-primary text-white font-medium py-2 rounded-lg mt-3 h-10"
                 isLoading={isLoading}
                 disabled={email.error || isLoading || !email.value}
               >
@@ -470,7 +470,7 @@ const Login = () => {
                 </div>
                 <Button
                   type="submit"
-                  className="w-full bg-primary text-white font-medium py-2 rounded-lg my-4 h-12"
+                  className="w-full bg-primary text-white font-medium py-2 rounded-lg my-4 h-10"
                   disabled={otp.length !== 6 || isLoading}
                   isLoading={isLoading}
                 >
@@ -480,7 +480,7 @@ const Login = () => {
             </form>
           ) : (
             <form onSubmit={handlePasswordChangeSubmit}>
-              <div className="space-y-4 mb-4">
+              <div className="space-y-3 mb-4">
                 <div>
                   <Label
                     htmlFor="new-password"
@@ -493,7 +493,7 @@ const Login = () => {
                       id="new-password"
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your new password"
-                      className="w-full h-12 pl-3 pr-10 rounded-lg text-[#9d9d9d] placeholder-text-[#9d9d9d] bg-transparent border-[#e0effe] focus:border-none"
+                      className="w-full h-10 pl-3 pr-10 rounded-lg text-[#9d9d9d] placeholder-text-[#9d9d9d] bg-transparent border-[#e0effe] focus:border-none"
                       value={forgotPassword.value}
                       onChange={forgotPassword.changeHandler}
                       required
@@ -528,7 +528,7 @@ const Login = () => {
                       id="confirm-password"
                       type={showConfirmPassword ? "text" : "password"}
                       placeholder="Confirm your new password"
-                      className="w-full h-12 pl-3 pr-10 rounded-lg text-[#9d9d9d] placeholder-text-[#9d9d9d] bg-transparent border-[#e0effe] focus:border-none"
+                      className="w-full h-10 pl-3 pr-10 rounded-lg text-[#9d9d9d] placeholder-text-[#9d9d9d] bg-transparent border-[#e0effe] focus:border-none"
                       value={confirmPassword.value}
                       onChange={confirmPassword.changeHandler}
                       required
@@ -555,7 +555,7 @@ const Login = () => {
 
               <Button
                 type="submit"
-                className="w-full bg-primary text-white font-medium py-2 rounded-lg mt-4 h-12"
+                className="w-full bg-primary text-white font-medium py-2 rounded-lg mt-3 h-10"
                 disabled={
                   !forgotPassword.value ||
                   !confirmPassword.value ||
