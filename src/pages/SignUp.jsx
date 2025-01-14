@@ -108,7 +108,7 @@ const SignUp = () => {
  
 
   return (
-    <div className="h-[calc(100dvh-4rem)] flex items-center justify-center">
+    <div className="h-[calc(100dvh-6rem)] flex items-center justify-center">
       <Card className="bg-[#121315] w-full max-w-md p-4 rounded-lg border-none dark">
         <CardHeader>
           <CardTitle className="text-center font-medium">
