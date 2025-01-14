@@ -69,7 +69,7 @@ const Header = () => {
   };
 
   return (
-    <header className="top-0 inset-x-0 h-[3rem] py-4  bg-black lg:py-4 mb-4 sticky">
+    <header className="top-0 inset-x-0 h-[3rem] py-4  bg-black lg:py-4  sticky">
       <div className="md:container px-[0.5rem] h-full mx-auto flex items-center justify-between gap-2">
         <Link
           to="/"
