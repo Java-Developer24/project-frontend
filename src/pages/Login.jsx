@@ -251,32 +251,45 @@ const Login = () => {
     }
   
     setIsLoading(true);
-  
-    try {
-      const response = await axios.post("/api/auth/login", {
-        email: emailAdd.value,
-        password: password.value,
-        captcha: captchaValue,
-      });
-  
-      const { token } = response.data;
-      login(token); // Assuming login is a function that saves the token
-  
-      toast.success("Login successful!", {
-        autoClose: 7000, // The toast will remain open for 3 seconds
-      });
-      navigate("/");
-  
-    } catch (error) {
-      const errorMessage = error.response?.data?.message || "Login failed. Please try again.";
-      toast.error(errorMessage);
-  
-      if (turnstile) {
-        turnstile.reset();
-      }
-    } finally {
-      setIsLoading(false);
-    }
+    // Create a promise for the login request
+    const loginPromise = new Promise((resolve, reject) => {
+      const loginRequest = async () => {
+        try {
+          // Send login request
+          const response = await axios.post("/api/auth/login", {
+            email: emailAdd.value,
+            password: password.value,
+            captcha: captchaValue,
+          });
+
+          const { token } = response.data;
+          login(token);
+          resolve(); // Resolve the promise on success
+        } catch (error) {
+          // Reject the promise on error
+          reject(error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      loginRequest();
+    });
+    // Show toast notifications based on the promise state
+    await toast.promise(loginPromise, {
+      loading: "Logging in...",
+      success: () => {
+        setTimeout(() => {
+          navigate("/"); // Redirect after a delay
+        }, 10000); // 3000ms = 3 seconds
+        return "Login successful!";
+      },
+      error: (error) => {
+        const errorMessage =
+          error.response?.data?.error || "Login failed. Please try again.";
+        return errorMessage;
+      },
+    });
   };
   
   const handleGoogleLogin = async () => {
@@ -289,10 +302,7 @@ const Login = () => {
     }
   };
   
-  // const handleGoogleLogin = () => {
-  //   // Redirect to the backend's Google OAuth route
-  //   window.location.href = "/api/auth/google/login";
-  // };
+ 
  
  
 

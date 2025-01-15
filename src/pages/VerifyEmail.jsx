@@ -8,6 +8,7 @@ const VerifyEmail = () => {
   const token = searchParams.get("token");
   const [message, setMessage] = useState("Verifying your email...");
   const [isLoading, setIsLoading] = useState(true);
+  const [toastShown, setToastShown] = useState(false); // Flag to track if toast has been shown
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
@@ -30,11 +31,16 @@ const VerifyEmail = () => {
 
         if (response.ok) {
           setMessage("Email verified successfully! Redirecting...");
-          toast.success(data.message || "Your email has been successfully verified.");
+          if (!toastShown) {
+            toast.success( "Your email has been successfully verified.", {
+              autoClose: 3000, // Show toast for 5 seconds
+            });
+            setToastShown(true); // Mark toast as shown
+          }
 
           if (data.jwtToken) {
             login(data.jwtToken);
-            setTimeout(() => navigate("/"), 3000);
+            setTimeout(() => navigate("/"), 2000);
           }
         } else {
           setMessage(data.message || "Invalid or expired token. Please try again.");
@@ -49,7 +55,7 @@ const VerifyEmail = () => {
     };
 
     verifyEmail();
-  }, [token, navigate, login]);
+  }, [token, navigate, login, toastShown]); // Added toastShown to the dependency array
 
   return (
     <div className="h-[calc(100dvh-4rem)] flex items-center justify-center bg-black text-white">

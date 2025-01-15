@@ -1,5 +1,6 @@
 import  { lazy, Suspense, useContext, useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+
 import ProtectRoute from "@/components/auth/ProtectRoute";
 import { LayoutLoader } from "@/components/layout/Loaders";
 import axios from "axios";
@@ -74,6 +75,7 @@ function App() {
     <BrowserRouter>
       <Suspense fallback={<LayoutLoader />}>
         <Routes>
+       
           {isMaintenance ? (
             <>
               <Route path="*" element={<Navigate to="/" />} />

@@ -6,6 +6,7 @@ import App from "@/App.jsx";
 import "@/index.css";
 import { AuthProvider } from "./utils/AppContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { Toaster } from "react-hot-toast";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   
@@ -13,6 +14,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <React.StrictMode>
       
       <AuthProvider>
+      <Toaster position="bottom-right" />
         <App />
       </AuthProvider>
     </React.StrictMode>
