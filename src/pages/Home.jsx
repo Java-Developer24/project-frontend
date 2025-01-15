@@ -26,8 +26,8 @@ const Home = ({ serviceData }) => {
     const fetchInfo = async () => {
       try {
         const [bannerResponse, disclaimerResponse] = await Promise.all([
-          axios.get('/api/info/banner'),
-          axios.get('/api/info/disclaimer')
+          axios.get('/api/info/admin-api/get-info-banner/banner'),
+          axios.get('/api/info/admin-api/get-disclaimer-data/disclaimer')
         ]);
         
         setBannerInfo(bannerResponse.data);
@@ -161,7 +161,7 @@ const Home = ({ serviceData }) => {
   
   
   return (
-    <div className="h-[calc(100dvh-6rem)]  flex flex-col items-center justify-center overflow-hidden hide-scrollbar">
+    <div className="h-[calc(100dvh-4rem)] flex flex-col items-center justify-center">
    
    {/* Reserve space for the banner with a minimum height */}
    <div className="pb-2 min-h-[50px]"> {/* Adjust 80px as per your banner height */}
@@ -171,10 +171,10 @@ const Home = ({ serviceData }) => {
       </div>
     
       
-      <div className="w-full flex justify-center ">
+      <div className="w-full flex justify-center my-8">
         
-        <div className="w-full max-w-[980px] flex flex-col items-center bg-[#121315] rounded-2xl p-3 sticky ">
-          <div className="w-full flex bg-[#18191c] rounded-2xl items-center h-[60px] mb-3 px-3 ">
+      <div className="w-full max-w-[720px] flex flex-col items-center bg-[#121315] rounded-2xl p-3 md:p-5">
+      <div className="w-full flex bg-[#18191c] rounded-2xl items-center h-[60px] mb-3 px-3 md:px-5">
             <Icon.search className="text-[30px] text-primary" />
             <input
               type="text"
@@ -190,7 +190,7 @@ const Home = ({ serviceData }) => {
               ""
             )}
           </div>
-          <div className="flex flex-col w-full h-[450px] md:h-[460px]">
+          <div className="flex flex-col w-full h-[450px] md:h-[340px]">
             <h5 className="p-3">{selectedService ? "Select Server" : "Services"}</h5>
             <div className="rounded-2xl flex flex-col overflow-y-auto hide-scrollbar h-full">
               {selectedService ? (

@@ -176,7 +176,7 @@ const GetNumber = () => {
       const buyAgainRequest = async () => {
         try {
           await axios.get(
-            `/api/service/get-number?api_key=${apiKey}&servicecode=${servicecode}&server=${server}&otpType=${otpType}`
+            `/api/service/get-number?api_key=${apiKey}&servicecode=${servicecode}&server=${server}`
           );
 
           await fetchOrdersAndTransactions();

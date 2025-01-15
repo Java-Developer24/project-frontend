@@ -15,7 +15,6 @@ import { Icon } from "../ui/Icons";
 import { AuthContext } from "@/utils/AppContext";
 
 import SheetComponent from "../shared/SheetComponent";
-import { SheetDescription, SheetHeader, SheetTitle } from "../ui/Sheet";
 
 const Header = () => {
   const [toggleDropdown, setToggleDropdown] = useState(false);
@@ -69,8 +68,8 @@ const Header = () => {
   };
 
   return (
-    <header className="top-0 inset-x-0 h-[3rem] py-4  bg-black lg:py-4  sticky">
-      <div className="md:container px-[0.5rem] h-full mx-auto flex items-center justify-between gap-2">
+    <header className="top-0 inset-x-0 h-[4rem] py-4 sticky bg-black lg:py-2">
+      <div className="md:container px-[1rem] h-full mx-auto flex items-center justify-between gap-2">
         <Link
           to="/"
           className="hidden lg:flex title-font font-medium items-center"
@@ -118,7 +117,7 @@ const Header = () => {
                 onClose={toggleSheet}
                 from="left"
               >
-{/*                 <SheetHeader className={"hidden"}>
+                {/* <SheetHeader className={"hidden"}>
                   <SheetTitle>Navigation Sidebar</SheetTitle>
                   <SheetDescription>
                     This is for mobile view navigation.
