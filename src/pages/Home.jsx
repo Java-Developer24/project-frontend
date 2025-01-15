@@ -161,11 +161,11 @@ const Home = ({ serviceData }) => {
   
   
   return (
-    <div className="h-[calc(100dvh-4rem)] flex flex-col items-center justify-center">
+    <div className="h-[calc(100dvh-8rem)] flex flex-col items-center justify-center">
    
    {/* Reserve space for the banner with a minimum height */}
    
-   <div className=" min-h-[20px] pt-3  "> 
+   <div className=" min-h-[10px]  "> 
       {bannerInfo?.message && (
         <Banner message={bannerInfo.message} type={bannerInfo.type} />
       )}
