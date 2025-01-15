@@ -297,18 +297,18 @@ const Login = () => {
  
 
   return (
-    <div className="min-h-[calc(100dvh-6rem)] flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
-      <Card className="bg-[#121315] w-full sm:max-w-md rounded-lg border-none dark">
+    <div className="h-[calc(100dvh-4rem)] flex items-center justify-center">
+     <Card className="bg-[#121315] w-full max-w-md rounded-lg border-none dark">
         <CardHeader>
           <CardTitle className="text-center font-medium">
             {forgotPass ? (showOTP ? "Verify OTP" : "Reset Password") : "Login"}
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-3 sm:p-4 !pt-0">
+        <CardContent className="p-4 md:p-6 !pt-0">
           {!forgotPass ? (
             <>
               <form onSubmit={handleSubmit}>
-                <div className="space-y-3 mb-4">
+              <div className="space-y-4">
                   <div>
                     <Label
                       htmlFor="email"
@@ -377,13 +377,14 @@ const Login = () => {
                   </div>
                 </div>
 
-                <div className="flex justify-center mb-4 mt-6 overflow-x-auto">
+                <div className="flex justify-center mb-4 mt-8">
                   <Turnstile
                     sitekey="0x4AAAAAAA1Y9hSf6wBjYC09"
+                    
                     onVerify={(token) => {
                       setCaptchaValue(token);
                     }}
-                    className="transform scale-90 sm:scale-100"
+                     className="scale-[0.85] md:transform-none"
                   />
                 </div>
 
@@ -391,7 +392,7 @@ const Login = () => {
                   type="submit"
                   variant="login"
                   isLoading={isLoading}
-                  className="w-full text-sm font-normal mb-4 py-2 h-10"
+                  className="w-full text-sm font-normal mb-4"
                   disabled={
                     !emailAdd.value ||
                     !password.value
@@ -403,13 +404,13 @@ const Login = () => {
                   onClick={handleGoogleLogin}
                   variant="outline"
                   type="button"
-                  className="w-full text-sm py-2 h-10"
+                 className="w-full text-sm"
                 >
                   <Icon.google className="w-4 h-4 mr-2" /> Continue with Google
                 </Button>
               </form>
 
-              <div className="mt-3 text-center text-sm text-[#BEBEBF] font-normal">
+              <div className="mt-4 text-center text-sm text-[#BEBEBF] font-normal">
                 Don&apos;t have an account?{" "}
                 <Button
                   variant="link"
@@ -422,7 +423,7 @@ const Login = () => {
             </>
           ) : !emailSent ? (
             <form onSubmit={handleForgotPasswordSubmit}>
-              <div className="space-y-3 mb-4">
+              <div className="space-y-4">
                 <div>
                   <Label
                     htmlFor="email"
@@ -480,7 +481,7 @@ const Login = () => {
             </form>
           ) : (
             <form onSubmit={handlePasswordChangeSubmit}>
-              <div className="space-y-3 mb-4">
+              <div className="space-y-4">
                 <div>
                   <Label
                     htmlFor="new-password"

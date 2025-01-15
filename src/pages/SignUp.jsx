@@ -108,7 +108,7 @@ const SignUp = () => {
  
 
   return (
-    <div className="h-[calc(100dvh-6rem)] flex items-center justify-center">
+    <div className="h-[calc(100dvh-4rem)] flex items-center justify-center">
       <Card className="bg-[#121315] w-full max-w-md p-4 rounded-lg border-none dark">
         <CardHeader>
           <CardTitle className="text-center font-medium">
@@ -148,7 +148,7 @@ const SignUp = () => {
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
-                    className="w-full h-12 pl-3 pr-10 rounded-lg bg-transparent border-[#e0effe]"
+                     className="w-full h-12 pl-3 pr-10 rounded-lg text-[#9d9d9d] placeholder-text-[#9d9d9d] bg-transparent border-[#e0effe] focus:border-none"
                     value={password.value}
                     onChange={password.changeHandler}
                     required
@@ -180,7 +180,7 @@ const SignUp = () => {
                     id="confirm-password"
                     type={showConfirmPassword ? "text" : "password"}
                     placeholder="Confirm your password"
-                    className="w-full h-12 pl-3 pr-10 rounded-lg bg-transparent border-[#e0effe]"
+                     className="w-full h-12 pl-3 pr-10 rounded-lg text-[#9d9d9d] placeholder-text-[#9d9d9d] bg-transparent border-[#e0effe] focus:border-none"
                     value={confirmPassword.value}
                     onChange={confirmPassword.changeHandler}
                     required
@@ -200,7 +200,7 @@ const SignUp = () => {
               </div>
 
               {/* CAPTCHA */}
-              <div className="flex justify-center my-4">
+              <div className="flex justify-center mb-4 mt-8">
               <Turnstile
                 
                 sitekey="0x4AAAAAAA1Y9hSf6wBjYC09" // Replace with your site key
@@ -208,6 +208,7 @@ const SignUp = () => {
                   // console.log("Captcha token:", token);
                   setCaptchaValue(token);
                 }} // Store the CAPTCHA token
+                 className="scale-[0.85] md:transform-none"
               />
                 
               </div>
@@ -216,7 +217,7 @@ const SignUp = () => {
               <Button
                 type="submit"
                 variant="login"
-                className="w-full text-sm font-normal"
+                 className="w-full text-sm font-normal mb-4"
                 isLoading={isLoading}
                 disabled={
                   !captchaValue ||
@@ -237,17 +238,17 @@ const SignUp = () => {
                 className="w-full text-sm"
                 onClick={handleGoogleLogin}
               >
-                <Icon.google className="w-4 h-4 mr-2" /> Signup with Google
+                <Icon.google className="w-4 h-4 mr-1" /> Signup with Google
               </Button>
             </div>
           </form>
 
           {/* Redirect to Login */}
-          <div className="mt-4 text-center text-sm text-[#BEBEBF]">
+          <div className="mt-4 text-center text-sm text-[#BEBEBF] font-normal">
             Already have an account?{" "}
             <Button
               variant="link"
-              className="py-0 px-1 text-sm"
+              className="!no-underline py-0 px-1 text-sm font-normal h-0"
               onClick={() => navigate("/login")}
             >
               Login
