@@ -23,7 +23,7 @@ const GetNumber = () => {
   const fetchOrdersAndTransactions = async () => {
     try {
       const [ordersResponse, transactionsResponse] = await Promise.all([
-        axios.get(`/api/user/orders?userId=${user.userId}`),
+        axios.get(`/api/user/admin-api/get-orders-data/orders?userId=${user.userId}`),
         axios.get(`/api/history/transaction-history-user?userId=${user.userId}`),
       ]);
   

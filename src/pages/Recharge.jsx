@@ -42,7 +42,7 @@ const Recharge = ({ maintenanceStatusTrx, maintenanceStatusUpi }) => {
   useEffect(() => {
     const fetchMinUpiAmount = async () => {
       try {
-        const response = await axios.get("/api/config/min-upi-amount"); // Backend endpoint to get the current min UPI amount
+        const response = await axios.get("/api/config/admin-api/upi-min-amt/min-upi-amount"); // Backend endpoint to get the current min UPI amount
         const { minUpiAmount } = response.data;
         setMinUpiAmount(minUpiAmount); // Store the min amount in state
       } catch (error) {

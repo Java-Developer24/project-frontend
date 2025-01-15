@@ -15,8 +15,8 @@ const Banner = ({ message, type = 'info' }) => {
   return (
     <div className={`w-full   rounded-lg  ${getBannerStyles()}`}>
       <div className="flex items-center justify-start gap-2 animate-scroll ">
-        <Icon.info className="w-5 h-5" />
-        <p className="text-sm ">{message}</p>
+        
+        <p className="text-xs ">{message}</p>
       </div>
     </div>
   );
