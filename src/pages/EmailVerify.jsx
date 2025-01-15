@@ -7,7 +7,7 @@ const EmailVerify = () => {
   const email = state?.email || "your registered email";
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black text-white">
+    <div className="h-[calc(100dvh-4rem)] flex items-center justify-center bg-black text-white">
       <div className="bg-[#121315] rounded-lg shadow-lg p-8 max-w-md text-center border border-[#1b1d21] animate-in fade-in-0 slide-in-from-bottom-4 duration-700">
         <Icon.mail
           className="mx-auto w-16 h-16 mb-6 text-primary animate-in zoom-in-50 duration-1000"

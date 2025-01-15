@@ -52,7 +52,7 @@ const VerifyEmail = () => {
   }, [token, navigate, login]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black text-white">
+    <div className="h-[calc(100dvh-4rem)] flex items-center justify-center bg-black text-white">
       <div className="bg-[#121315] p-8 rounded-xl shadow-lg max-w-md w-full text-center border border-[#1b1d21] animate-in fade-in-0 slide-in-from-bottom-4 duration-700">
         <h1 className="text-2xl font-bold mb-4 text-primary animate-in slide-in-from-left duration-700">
           Email Verification
