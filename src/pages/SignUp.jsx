@@ -102,7 +102,7 @@ const SignUp = () => {
   
   const handleGoogleLogin = () => {
     // Redirect to the backend's Google OAuth route
-    window.location.href = "https://project-backend-xo17.onrender.com/api/auth/google/signup";
+    window.location.href = "https://project-backend-1-93ag.onrender.com/api/auth/google/signup";
   };
   
  
