@@ -9,7 +9,7 @@ import HomeWrapper from "@/components/layout/HomeWrapper";
 import VerifyEmail from "./pages/VerifyEmail";
 import EmailVerify from "./pages/EmailVerify";
 const Login = lazy(() => import("@/pages/Login"));
-const AdminAuthLogin=lazy(()=> import("@/pages/AdminAuthLogin "))
+
 const SignUp = lazy(() => import("@/pages/SignUp"));
 const ChangePassword = lazy(() => import("@/pages/ChangePassword"));
 const Api_key = lazy(() => import("@/pages/Api"));
@@ -23,7 +23,7 @@ const About = lazy(() => import("@/pages/About"));
 const CheckOtp = lazy(() => import("@/pages/CheckOtp"));
 
 function App() {
-  axios.defaults.baseURL = "https://project-backend-1-93ag.onrender.com";
+  axios.defaults.baseURL = "https://project-backend-1-93ag.onrender.com/";
   axios.defaults.withCredentials = true;
   const { user, setMaintainance, isGoogleLogin } = useContext(AuthContext);
   const [isMaintenance, setIsMaintenance] = useState(false);
@@ -137,11 +137,7 @@ function App() {
                   </ProtectRoute>
                 }
               />
-              <Route path="/admin-auth-login" element={
-                <ProtectRoute user={user} redirect="/">
-                  <AdminAuthLogin />
-                </ProtectRoute>
-              } />
+             
               <Route
                 path="/my-orders"
                 element={
