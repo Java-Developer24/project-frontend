@@ -33,6 +33,7 @@ const Recharge = ({ maintenanceStatusTrx, maintenanceStatusUpi }) => {
   const transactionId = useInputValidation("");
   const [exchangeRate, setExchangeRate] = useState("");
   const [isloading, setIsloading] = useState(false);
+  const [loading, setLoading] = useState(true); // State to track loading status
   const { user, fetchBalance, apiKey } = useContext(AuthContext);
   const [QRImage, setQRImage] = useState(null);
   const [confirmDialog, setConfirmDialog] = useState(true);
@@ -44,10 +45,15 @@ const Recharge = ({ maintenanceStatusTrx, maintenanceStatusUpi }) => {
       try {
         const response = await axios.get("/api/config/admin-api/upi-min-amt/min-upi-amount"); // Backend endpoint to get the current min UPI amount
         const { minUpiAmount } = response.data;
-        setMinUpiAmount(minUpiAmount); // Store the min amount in state
+         // Add slight delay to simulate loading
+         
+          setMinUpiAmount(minUpiAmount); // Update after delay
+          setLoading(false); // Adjust delay as needede
+        
       } catch (error) {
         toast.error("Failed to fetch minimum UPI amount.");
         console.error("Error fetching min UPI amount:", error);
+        setLoading(false); // Ensure loading is false even if the API request fails
       }
     };
   
@@ -190,8 +196,15 @@ const handleTrxSubmit = async (e) => {
     navigator.clipboard.writeText(user.trxAddress);
   };
 
+  if (loading) {
+    <div className="flex items-center justify-center h-full">
+    <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-primary"></div>
+  </div>
+  }
   return (
     <div className="h-[calc(100dvh-6rem)] overflow-hidden flex flex-col overflow-y-auto w-full items-center justify-center">
+     
+     
       <div className="flex overflow-hidden w-[500px]">
         <h1 className="animate-h1">
           {maintenanceStatusUpi && maintenanceStatusTrx
@@ -284,7 +297,7 @@ const handleTrxSubmit = async (e) => {
                     htmlFor="amount"
                     className="block text-sm text-[#9d9d9d] font-normal py-2"
                   >
-                     Amount (Min: ₹{minUpiAmount}) {/* Displaying the minimum UPI amount */}
+                   Amount (Min: ₹{minUpiAmount || "..."}) {/* Displaying the minimum UPI amount */}
                   </Label>
                   <Input
                     id="amount"
