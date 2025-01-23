@@ -178,7 +178,9 @@ function App() {
                   </ProtectRoute>
                 }
               />
-              <Route path="/verify-email" element={<VerifyEmail />} />
+              
+              
+              <Route path="/verify-email" element={<VerifyEmail />} /> 
               <Route path="/email-verify" element={<EmailVerify />} />
               <Route path="/*" element={<NotFound />} />
             </>

@@ -1,27 +1,28 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { AuthContext } from "@/utils/AppContext";
+import AppLayout from "@/components/layout/AppLayout";
 
 const VerifyEmail = () => {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
   const [message, setMessage] = useState("Verifying your email...");
   const [isLoading, setIsLoading] = useState(true);
-  const [toastShown, setToastShown] = useState(false); // Flag to track if toast has been shown
+  const toastRef = useRef(false); // Use ref to track toast display
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
   useEffect(() => {
     const verifyEmail = async () => {
-      try {
-        if (!token) {
-          setMessage("No token provided. Please check the verification link.");
-          toast.error("Invalid verification link.");
-          setIsLoading(false);
-          return;
-        }
+      if (!token) {
+        setMessage("No token provided. Please check the verification link.");
+        toast.error("Invalid verification link.");
+        setIsLoading(false);
+        return;
+      }
 
+      try {
         const response = await fetch(
           `https://project-backend-1-93ag.onrender.com/api/auth/verify-email?token=${token}`,
           { method: "GET" }
@@ -31,11 +32,13 @@ const VerifyEmail = () => {
 
         if (response.ok) {
           setMessage("Email verified successfully! Redirecting...");
-          if (!toastShown) {
-            toast.success( "Your email has been successfully verified.", {
-              autoClose: 3000, // Show toast for 5 seconds
+
+          // Display toast only if it hasn't been shown
+          if (!toastRef.current) {
+            toast.success("Your email has been successfully verified.", {
+              autoClose: 1000, // Toast duration (1 second)
             });
-            setToastShown(true); // Mark toast as shown
+            toastRef.current = true; // Mark toast as shown
           }
 
           if (data.jwtToken) {
@@ -55,7 +58,7 @@ const VerifyEmail = () => {
     };
 
     verifyEmail();
-  }, [token, navigate, login, toastShown]); // Added toastShown to the dependency array
+  }, [token, navigate, login]); // Removed `toastShown` from dependencies and added `toastRef`
 
   return (
     <div className="h-[calc(100dvh-4rem)] flex items-center justify-center bg-black text-white">
@@ -76,4 +79,4 @@ const VerifyEmail = () => {
   );
 };
 
-export default VerifyEmail;
+export default AppLayout()(VerifyEmail);

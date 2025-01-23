@@ -55,9 +55,9 @@ const GetNumber = () => {
   
 
 
-  const getOTPFromTransaction = (numberId) => {
+  const getOTPFromTransaction = (Id) => {
     const relatedTransactions = transactions.filter(
-      (transaction) => transaction.id === numberId
+      (transaction) => transaction.Id === Id
     );
 
     if (relatedTransactions.length === 0) {
@@ -101,7 +101,7 @@ const GetNumber = () => {
                 [orderId]: true,
               }));
               handleOrderExpire(orderId);
-            } else if (newRemainingTime.split(":")[0] <= "18") {
+            } else if (newRemainingTime.split(":")[0] <= "17") {
               setButtonStates((prevStates) => ({
                 ...prevStates,
                 [orderId]: true,
@@ -128,14 +128,14 @@ const GetNumber = () => {
     await fetchBalance(apiKey);
   };
 
-  const handleOrderCancel = async (orderId, numberId, server, hasOtp) => {
+  const handleOrderCancel = async (orderId, Id, server, hasOtp) => {
     setLoadingCancel((prev) => ({ ...prev, [orderId]: true }));
 
     const orderCancelPromise = new Promise((resolve, reject) => {
       const orderCancelRequest = async () => {
         try {
           await axios.get(
-            `/api/service/number-cancel?api_key=${apiKey}&id=${numberId}&server=${server}`
+            `/api/service/number-cancel?api_key=${apiKey}&Id=${Id}`
           );
           resolve();
         } catch (error) {
@@ -211,9 +211,9 @@ const GetNumber = () => {
         const updatedTransactions = []; // Store updated transactions
 
         for (const order of orders) {
-            const { server, requestId } = order; // Use 'number' here
+            const {  Id } = order; // Use 'number' here
             const response = await axios.get(
-                `/api/service/get-otp?api_key=${apiKey}&server=${server}&requestId=${requestId}` // Use 'number' here
+                `/api/service/get-otp?api_key=${apiKey}&Id=${Id}` // Use 'number' here
             );
 
             // Assuming your backend returns updated transaction data for the specific number
@@ -265,7 +265,7 @@ console.log(orders)
         </div>
       ) : (
         orders.map((order) => {
-          const hasOtp = getOTPFromTransaction(order.numberId).some(
+          const hasOtp = getOTPFromTransaction(order.Id).some(
             (otp) => otp !== "Waiting for SMS"
           );
 
@@ -286,6 +286,11 @@ console.log(orders)
                   <div className="w-full flex text-center items-center justify-between">
                     <p>Price:</p>
                     <span> ₹{order.price}</span>
+                  </div>
+                  <hr className="border-[#888888] border w-full" />
+                  <div className="w-full flex text-center items-center justify-between">
+                    <p>Otp type:</p>
+                    <span>{order.otpType.split(" ")[0]}</span>
                   </div>
                 </div>
 
@@ -324,7 +329,7 @@ console.log(orders)
                 </div>
                 <div className="w-full flex bg-[#444444] border-2 border-[#888888] rounded-2xl items-center justify-center max-h-[100px] overflow-y-scroll hide-scrollbar">
                   <div className="w-full h-full flex flex-col items-center">
-                  {getOTPFromTransaction(order.numberId).map(
+                  {getOTPFromTransaction(order.Id).map(
                       (otp, index, arr) => (
                         <React.Fragment key={index}>
                           <div className="bg-transparent py-4 px-5 flex w-full items-center justify-center">
@@ -346,7 +351,7 @@ console.log(orders)
                       onClick={() =>
                         handleOrderCancel(
                           order._id,
-                          order.numberId,
+                          order.Id,
                           order.server,
                           hasOtp
                         )

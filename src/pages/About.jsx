@@ -65,7 +65,7 @@ And on other servers you can get  multiple sms and there's no guarantee you will
     {
       name: "Refund Policy",
       id: "8",
-      link: `After getting number there is no sms after 1 mint you can Cancel the number and money will be refunded immediately in your wallet`,
+      link: `After getting number there is no sms after 2 mint you can Cancel the number and money will be refunded immediately in your wallet`,
     },
   ];
 

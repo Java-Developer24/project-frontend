@@ -42,6 +42,7 @@ const Header = () => {
     { to: "/my-orders", text: "My Orders" },
     { to: "/api", text: "Api" },
     { to: "/check-otp", text: "Check Otp" },
+    
   ];
 
   const logoutlinks = [
@@ -175,9 +176,11 @@ const Header = () => {
                         : "hover:text-primary"
                     }`}
                   >
+                    
                     <Icon.login className="w-4 h-4 text-primary" />
                     Log-in
                   </Link>
+                  
                   <Link
                     to="/signup"
                     className={`flex gap-2 w-full items-center font-normal text-[#9E9E9E] transition-colors duration-200 ease-in-out ${

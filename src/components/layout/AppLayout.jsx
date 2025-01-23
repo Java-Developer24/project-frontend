@@ -8,7 +8,7 @@ const AppLayout = () => (WrappedComponent) => {
     return (
       <>
         {/* <Title /> */}
-        <Toaster position="bottom-right" reverseOrder={false} />
+        <Toaster position="top-right" reverseOrder={false} />
         <Header />
         <div className="md:container px-[1rem]">
           <WrappedComponent {...props} />

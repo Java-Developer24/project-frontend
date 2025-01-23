@@ -25,7 +25,7 @@ export const RechargeTable = ({ data, currentPage, limit }) => {
               <td className="p-2 font-normal text-sm">{history.amount}</td>
               <td className="p-2 font-normal text-sm">{history.method}</td>
               <td className="p-2 font-normal text-sm">
-                {moment(history.date_time, "DD/MM/YYYYThh:mm A").format(
+                {moment(history.date_time, "DD/MM/YYYYThh:mm:ss A").format(
                   "DD/MM/YYYY hh:mm:ss A"
                 )}
               </td>
@@ -95,8 +95,8 @@ export const RechargeTabelMob = ({ data, currentPage, limit }) => {
                   Date & Time
                 </td>
                 <td className="border-b-2 border-[#949494] p-3" style={wrapStyle}>
-                  {moment(item.date_time, "DD/MM/YYYYThh:mm A").format(
-                    "DD/MM/YYYY hh:mm:ss A"
+                  {moment(item.date_time, "DD/MM/YYYYTHH:mm A").format(
+                    "DD/MM/YYYY h:mm:ss A"
                   )}
                 </td>
               </tr>

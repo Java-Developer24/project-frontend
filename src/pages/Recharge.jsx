@@ -39,36 +39,53 @@ const Recharge = ({ maintenanceStatusTrx, maintenanceStatusUpi }) => {
   const [confirmDialog, setConfirmDialog] = useState(true);
   const [open, setOpen] = useState(false);
   const [minUpiAmount,setMinUpiAmount ]=useState("")
-  
+  const [isFetchingRate, setIsFetchingRate] = useState(false); // New state for fetching rate
+  const [isLoadingUpi, setIsLoadingUpi] = useState(false);
+const [isLoadingTrx, setIsLoadingTrx] = useState(false);
+
   useEffect(() => {
-    const fetchMinUpiAmount = async () => {
-      try {
-        const response = await axios.get("/api/config/admin-api/upi-min-amt/min-upi-amount"); // Backend endpoint to get the current min UPI amount
-        const { minUpiAmount } = response.data;
-         // Add slight delay to simulate loading
-         
-          setMinUpiAmount(minUpiAmount); // Update after delay
-          setLoading(false); // Adjust delay as needede
-        
-      } catch (error) {
-        toast.error("Failed to fetch minimum UPI amount.");
-        console.error("Error fetching min UPI amount:", error);
-        setLoading(false); // Ensure loading is false even if the API request fails
-      }
-    };
-  
-    fetchMinUpiAmount();
-  }, []);
-  
+    if (maintenanceStatusUpi) {
+        setLoading(false); // Stop loading spinner if UPI is under maintenance
+    } else {
+        const fetchMinUpiAmount = async () => {
+            try {
+                const response = await axios.get("/api/config/admin-api/upi-min-amt/min-upi-amount"); // Backend endpoint to get the current min UPI amount
+                const { minUpiAmount } = response.data;
+    
+                setMinUpiAmount(minUpiAmount); // Update after delay
+                setTimeout(() => {
+                    setMinUpiAmount(minUpiAmount);  // Set minUpiAmount after delay
+                    setLoading(false);  // Hide loading spinner after delay
+                }, 2000);  // Simulating a slight delay for 2 seconds
+    
+            } catch (error) {
+                toast.error("Failed to fetch minimum UPI amount.");
+                console.error("Error fetching min UPI amount:", error);
+                setLoading(false); // Ensure loading is false even if the API request fails
+            }
+        };
+    
+        fetchMinUpiAmount();
+    }
+}, [maintenanceStatusUpi]); // Trigger when maintenanceStatusUpi changes
+
   
   console.log(apiKey)
+
   const fetchExchangeRate = async () => {
+   
     try {
       const response = await axios.get("/api/recharge/exchange-rate");
       const data = await response.data;
+      
       setExchangeRate(data.price);
+      
+        // Simulating a slight delay for 2 seconds
     } catch (error) {
       console.error("Error fetching exchange rate:", error);
+      setLoading(false);
+    }finally {
+     
     }
   };
   const fetchQrImage = async (amount) => {
@@ -76,7 +93,10 @@ const Recharge = ({ maintenanceStatusTrx, maintenanceStatusUpi }) => {
       const response = await axios.post("/api/recharge/generate-qr", { amount });
       return response.data.qrCode; // Returning the QR code
     } catch (error) {
-      throw new Error("Error fetching QR code: " + error.message);
+      
+
+
+      throw new Error( error.response.data.message);
     }
   };
   
@@ -86,13 +106,13 @@ const Recharge = ({ maintenanceStatusTrx, maintenanceStatusUpi }) => {
       setIsUpi(false);
     }
   }, [maintenanceStatusUpi]);
+console.log("trx",maintenanceStatusTrx)
 
-  useEffect(() => {
-   
-    fetchExchangeRate();
-  }, [transactionOk, trxTransactionOk]);
-
-  
+// useEffect(() => {
+//   if (!maintenanceStatusTrx) {
+//       fetchExchangeRate();
+//   }
+// }, [maintenanceStatusTrx]); // Trigger when maintenanceStatusTrx changes
   
   
   const handleToggleUpi = async () => {
@@ -100,30 +120,43 @@ const Recharge = ({ maintenanceStatusTrx, maintenanceStatusUpi }) => {
       toast.error("Please enter a valid amount.");
       return;
     }
-  
+   setIsLoadingUpi(true);
     try {
       const qrCode = await fetchQrImage(amount.value);
       setQRImage(qrCode);
       setTransactionOk(true); // Only mark transaction as OK for UPI
     } catch (error) {
       toast.error(error.message || "Failed to generate QR code. Please try again.");
-    }
+    } finally {
+    setIsLoadingUpi(false);
+  }
   };
   
-  // useEffect(() => {
-  //   if (transactionOk || trxTransactionOk) {
-  //     fetchExchangeRate();
-  //     fetchQrImage(amount.value).then(qrCode => setQRImage(qrCode));
-  //   }
-  // }, [transactionOk, trxTransactionOk]);
+  useEffect(() => {
+    if ( trxTransactionOk) {
+      fetchExchangeRate();
+      
+    }
+  }, [transactionOk, trxTransactionOk]);
   
-  const handleToggleTrx = () => {
-    if (!trxamount.value || trxamount.error) {
+  const handleToggleTrx = async () => {
+   setIsLoadingTrx(true);
+   try {
+     if (!trxamount.value || trxamount.error) {
       toast.error("Please enter a valid amount.");
       return;
     }
+    fetchExchangeRate();
+    await new Promise(resolve => setTimeout(resolve, 1500));
     setTrxTransactionOk(true); // For TRX, no QR code is generated
-  };
+    
+   } catch (error) {
+    
+   } finally {
+    setIsLoadingTrx(false);
+   }
+   
+  }
  
   
 const handleUpiSubmit = async (e) => {
@@ -141,15 +174,23 @@ const handleUpiSubmit = async (e) => {
       transactionId: transactionId.value,
       userId: user.userId,
       email: user.email,
-      amount: amount.value,
+  
     });
 
     toast.success(response?.data?.message || "Recharge was successful. Thank you!");
     await fetchBalance(apiKey);
     handleCancel();
   } catch (error) {
-    const errorMessage = error.response?.data?.message || "Failed to process recharge.";
-    toast.error(errorMessage);
+    if (error.response) {
+      // API responded with an error
+      toast.error(error.response.data.error||error.response.data.message);
+    } else if (error.response.data.message) {
+      // Request made but no response received
+      toast.error(error.response.data.message);
+    } else {
+      // Other errors during the request setup
+      toast.error(`An unexpected error occurred: ${error.message}`);
+    }
   } finally {
     setIsloading(false);
   }
@@ -174,9 +215,16 @@ const handleTrxSubmit = async (e) => {
     await fetchBalance(apiKey);
     handleCancel();
   } catch (error) {
-    const errorMessage =
-      error.response?.data?.error || "Invalid Transaction Id. Please try again.";
-    toast.error(errorMessage);
+    if (error.response) {
+      // API responded with an error
+      toast.error(error.response.data.error||error.response.data.message);
+    } else if (error.response.data.message) {
+      // Request made but no response received
+      toast.error(error.response.data.message);
+    } else {
+      // Other errors during the request setup
+      toast.error(`An unexpected error occurred: ${error.message}`);
+    }
   } finally {
     setIsloading(false);
   }
@@ -196,11 +244,15 @@ const handleTrxSubmit = async (e) => {
     navigator.clipboard.writeText(user.trxAddress);
   };
 
+ // Empty dependency array to run only on mount
   if (loading) {
-    <div className="flex items-center justify-center h-full">
-    <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-primary"></div>
-  </div>
+    return (
+      <div className="flex items-center justify-center h-[calc(100dvh-6rem)]">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-primary"></div>
+      </div>
+    );
   }
+  
   return (
     <div className="h-[calc(100dvh-6rem)] overflow-hidden flex flex-col overflow-y-auto w-full items-center justify-center">
      
@@ -278,18 +330,30 @@ const handleTrxSubmit = async (e) => {
                       Pay through{" "}
                       {isUpi && !maintenanceStatusUpi ? "UPI" : "tron/trx"}
                     </h3>
+                    
                   </div>
                 </div>
+                
               </div>
               <div className="w-full">
                 <h3 className="font-medium text-[18px] lg:text-[25px] hidden lg:block">
                   Pay through{" "}
                   {isUpi && !maintenanceStatusUpi ? "UPI" : "tron/trx"}
                 </h3>
+
               </div>
             </>
           ) : null}
-          {isUpi && !maintenanceStatusUpi ? (
+            {isFetchingRate ? (
+            <div className=" w-full max-w-[720px] flex flex-col items-center rounded-2xl p-5 md:p-8 bg-[#121315]">
+         <div className="flex items-center justify-center">
+         <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-primary"></div>
+       </div>
+       </div>
+
+        )
+          : 
+          isUpi && !maintenanceStatusUpi ? (
             !transactionOk ? (
               <>
                 <div className="w-full mb-2">
@@ -317,8 +381,11 @@ const handleTrxSubmit = async (e) => {
                   type="button"
                   onClick={handleToggleUpi}
                   variant="login"
+                  
+                  isLoading={isLoadingUpi}
                   className="w-32 text-sm font-normal"
                 >
+                  
                   Submit
                 </Button>
               </>
@@ -360,6 +427,7 @@ const handleTrxSubmit = async (e) => {
                   >
                     Submit
                   </Button>
+                          
                   <Button
                     type="button"
                     variant="cancel"
@@ -372,8 +440,10 @@ const handleTrxSubmit = async (e) => {
                 </div>
               </>
             )
-          ) : null}
-          {!isUpi && !maintenanceStatusTrx ? (
+          ) 
+         : 
+
+          (!isUpi && !maintenanceStatusTrx ? (
             !trxTransactionOk ? (
               <>
                 <div className="w-full mb-2">
@@ -399,16 +469,18 @@ const handleTrxSubmit = async (e) => {
                   )}
                 </div>
 
-                <Button
-                  type="button"
+                <Button type="button"
                   onClick={handleToggleTrx}
+                  isLoading={isLoadingTrx}
                   variant="login"
-                  className="w-32 text-sm font-normal"
+                  className="w-32 text-sm font-normal" 
                 >
+                
                   Submit
                 </Button>
+                
               </>
-            ) : (
+            )  : (
               <div className="w-full mt-2">
                 <div className="flex  w-full items-center md:gap-4 text-sm text-[#9d9d9d] font-normal pt-2">
                   <p>Exchange Rate:</p>
@@ -482,7 +554,8 @@ const handleTrxSubmit = async (e) => {
                 </div>
               </div>
             )
-          ) : null}
+          
+          ) : null)}
         </div>
       </div>
       {confirmDialog && !maintenanceStatusUpi && (

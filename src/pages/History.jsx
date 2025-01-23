@@ -4,6 +4,7 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { AuthContext } from "@/utils/AppContext";
+import BannerPopup from "@/components/shared/BannerPopup";
 import {
   RechargeTabelMob,
   RechargeTable,
@@ -82,9 +83,9 @@ const History = () => {
 
     const groupedData = data.reduce((acc, entry) => {
       if (!acc[entry._id]) {
-        acc[entry.id] = [];
+        acc[entry.Id] = [];
       }
-      acc[entry.id].push(entry);
+      acc[entry.Id].push(entry);
       return acc;
     }, {});
 
@@ -130,8 +131,9 @@ const History = () => {
 
   // // Sort transactions by date and time
   const sortedFilteredTransactionHistory = filteredTransactionHistory.sort((a, b) =>
-    moment(b.date).isBefore(moment(a.date)) ? 1 : -1
-  );
+    moment(b.date_time).isBefore(moment(a.date_time)) ? 1 : -1
+);
+
   
   
   // Pagination handlers for Recharge History
@@ -177,6 +179,9 @@ const History = () => {
   const startIndexRecharge = (rechargeCurrentPage - 1) * rechargeLimit;
   const startIndexTransaction = (transactionCurrentPage - 1) * transactionLimit;
 
+  const sortedRechargeHistory = rechargeHistory.sort((a, b) =>
+    moment(b.date).isBefore(moment(a.date)) ? 1 : -1
+);
   const rechargeData = Array.isArray(rechargeHistory)
     ? rechargeHistory.slice(
         startIndexRecharge,
@@ -221,7 +226,7 @@ const History = () => {
       <div className="bg-[#121315] h-[calc(100dvh-6rem)] flex flex-col overflow-y-auto w-full p-4 md:p-6 rounded-lg mb-[30px] border-none dark relative">
         {isLoading ? (
           <div className="flex items-center justify-center h-full">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-primary"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-primary"></div>
           </div>
         ) : (
           <>
@@ -424,7 +429,7 @@ const NumberTable = ({ data, currentPage, limit }) => {
               <td className="p-2 font-normal text-sm">
                 {(currentPage - 1) * limit + index + 1}
               </td>
-              <td className="p-2 font-normal text-sm">{entry.requestId}</td>
+              <td className="p-2 font-normal text-sm">{entry.Id}</td>
               <td className="p-2 font-normal text-sm">{entry.number}</td>
               <td className="p-2 font-normal text-sm max-w-[400px]" style={{ wordBreak: 'break-word' }}>
                 {entry.otp && entry.otp[0] && entry.otp}
@@ -524,7 +529,7 @@ const NumberTabelMob = ({ data, currentPage, limit }) => {
                   style={wrapStyle}
                 >
                   
-                  {item.requestId??"N/A"}
+                  {item.Id??"N/A"}
                 </td>
               </tr>
               <tr>

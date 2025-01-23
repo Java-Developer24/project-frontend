@@ -73,17 +73,17 @@ const Api = () => {
     {
       name: "Get Number",
       id: "request_number",
-      link: "/api/service/get-number?api_key=${api_key}&servicecode=${service_code}&server=${server_number}&otpType=${otpType}",
+      link: "/api/service/get-number?api_key=${api_key}&code=${service_code}&server=${serverNumber}",
     },
     {
       name: "Get Otp",
       id: "activation_status",
-      link: "/api/service/get-otp?api_key=${api_key}&id=${id}&server=${server_number}&otpType=${otpType}",
+      link: "/api/service/get-otp?api_key=${api_key}&id=${id}",
     },
     {
       name: "Cancel Number",
       id: "get_activation_status",
-      link: "/api/service/number-cancel?api_key=${api_key}&id=${id}&server=${server_number}",
+      link: "/api/service/number-cancel?api_key=${api_key}&id=${id}",
     },
     {
       name: "Get Balance",

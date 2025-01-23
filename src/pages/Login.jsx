@@ -119,10 +119,17 @@ const Login = () => {
         return r.data?.message;
       },
       error: (error) => {
-        const errorMessage =
-          error.response?.data?.error ||
-          "OTP verification failed. Please try again.";
-        return errorMessage;
+       
+      if (error.response) {
+        // API responded with an error
+        toast.error(error.response.data.message);
+      } else if (error.request) {
+        // Request made but no response received
+        toast.error("No response received from the server. Please try again.");
+      } else {
+        // Other errors during the request setup
+        toast.error(`An unexpected error occurred: ${error.message}`);
+      }
       },
     });
   };
@@ -153,10 +160,17 @@ const Login = () => {
         return "OTP resent successfully";
       },
       error: (error) => {
-        const errorMessage =
-          error.response?.data?.error ||
-          "Failed to resend OTP. Please try again.";
-        return errorMessage;
+       
+      if (error.response) {
+        // API responded with an error
+        toast.error(error.response.data.message);
+      } else if (error.request) {
+        // Request made but no response received
+        toast.error("No response received from the server. Please try again.");
+      } else {
+        // Other errors during the request setup
+        toast.error(`An unexpected error occurred: ${error.message}`);
+      }
       },
     });
   };
@@ -192,10 +206,18 @@ const Login = () => {
         return "OTP sent to your email";
       },
       error: (error) => {
-        const errorMessage =
-          error.response?.data?.error ||
-          "Failed to send OTP. Please try again.";
-        return errorMessage;
+        toast.dismiss(); // Dismiss the loading toast
+      if (error.response) {
+        // Server responded with a status other than 2xx
+        toast.error(error.response.data.message);
+      } else if (error.request) {
+        // Request was made but no response was received
+        toast.error("No response received from server");
+      } else {
+        // Something went wrong in setting up the request
+        toast.error(`Error: ${error.message}`);
+      }
+      toast.error(errorMessage);
       },
     });
   };
@@ -233,69 +255,82 @@ const Login = () => {
         return "Password changed successfully. Please log in.";
       },
       error: (error) => {
-        const errorMessage =
-          error.response?.data?.error ||
-          "Failed to change password. Please try again.";
-        return errorMessage;
+       
+      if (error.response) {
+        // API responded with an error
+        toast.error(error.response.data.message);
+      } else if (error.request) {
+        // Request made but no response received
+        toast.error("No response received from the server. Please try again.");
+      } else {
+        // Other errors during the request setup
+        toast.error(`An unexpected error occurred: ${error.message}`);
+      }
       },
     });
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
   
-    // Validate email, password, and captchaValue
-    if (!emailAdd?.value || !password?.value ) {
+    // Check if email, password, and captcha values are present
+    if (!emailAdd?.value || !password?.value || !captchaValue) {
       toast.error("Please fill out all fields and complete the CAPTCHA");
       return;
     }
   
     setIsLoading(true);
-    // Create a promise for the login request
-    const loginPromise = new Promise((resolve, reject) => {
-      const loginRequest = async () => {
-        try {
-          // Send login request
-          const response = await axios.post("/api/auth/login", {
-            email: emailAdd.value,
-            password: password.value,
-            captcha: captchaValue,
-          });
-
-          const { token } = response.data;
-          login(token);
-          resolve(); // Resolve the promise on success
-        } catch (error) {
-          // Reject the promise on error
-          reject(error);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-
-      loginRequest();
-    });
-    // Show toast notifications based on the promise state
-    await toast.promise(loginPromise, {
-      loading: "Logging in...",
-      success: () => {
-        setTimeout(() => {
-          navigate("/"); // Redirect after a delay
-        }, 10000); // 3000ms = 3 seconds
-        return "Login successful!";
-      },
-      error: (error) => {
-        const errorMessage =
-          error.response?.data?.error || "Login failed. Please try again.";
-        return errorMessage;
-      },
-    });
+  
+    // Show a loading toast
+    const loadingToastId = toast.loading("Logging in...");
+  
+    try {
+      // Send login request to the server
+      const { data } = await axios.post("/api/auth/login", {
+        email: emailAdd.value,
+        password: password.value,
+        captcha: captchaValue,
+      });
+  
+      // Extract token from response
+      const { token } = data;
+  
+      // Store token and perform login action
+      login(token);
+  
+      // Replace loading toast with success message
+      toast.dismiss(loadingToastId);
+      toast.success("Login successful!");
+  
+      // Redirect after a short delay
+      setTimeout(() => {
+        navigate("/");
+      }, 2000); // Adjust delay as needed
+    } catch (error) {
+      // Handle any errors during the login request
+      toast.dismiss(loadingToastId);
+  
+      if (error.response) {
+        // API responded with an error
+        toast.error(error.response.data.message);
+      } else if (error.request) {
+        // Request made but no response received
+        toast.error("No response received from the server. Please try again.");
+      } else {
+        // Other errors during the request setup
+        toast.error(`An unexpected error occurred: ${error.message}`);
+      }
+    } finally {
+      // Reset loading state regardless of success or failure
+      setIsLoading(false);
+    }
   };
   
   const handleGoogleLogin = async () => {
     try {
       
-     window.location.href = "https://project-backend-1-93ag.onrender.com/api/auth/google/login"
+     window.location.href = "http://localhost:3000/api/auth/google/login"
     } catch (error) {
       // Example of redirecting with error message
         navigate(`/login?error=${encodeURIComponent(error?.response?.data?.message || "Login failed. Please try again.")}`);

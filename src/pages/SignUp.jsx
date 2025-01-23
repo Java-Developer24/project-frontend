@@ -81,7 +81,9 @@ const SignUp = () => {
 
       // Automatically log in user after signup
       
-      toast.success(data.message || "Signup successful. Please verify your email to activate your account.");
+      toast.success(data.message || "Signup successful. Please verify your email to activate your account.", {
+        autoClose: 3000, // Set duration to 4 seconds (4000ms)
+      });
 
       navigate("/email-verify", { state: { email: email.value } });
 
@@ -102,7 +104,7 @@ const SignUp = () => {
   
   const handleGoogleLogin = () => {
     // Redirect to the backend's Google OAuth route
-    window.location.href = "https://project-backend-1-93ag.onrender.com/api/auth/google/signup";
+    window.location.href = "http://localhost:3000/api/auth/google/signup";
   };
   
  
@@ -221,8 +223,7 @@ const SignUp = () => {
                 isLoading={isLoading}
                 disabled={
                   !captchaValue ||
-                  (captchaValue && isLoading) ||
-                  isLoading ||
+                 
                   !email.value||!password.value||!confirmPassword.value||
                   email.error ||
                   password.error ||
@@ -234,6 +235,7 @@ const SignUp = () => {
 
               {/* Google Login */}
               <Button
+              type="button" // Add this line to prevent form submission
                 variant="outline"
                 className="w-full text-sm"
                 onClick={handleGoogleLogin}
