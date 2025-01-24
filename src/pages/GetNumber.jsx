@@ -147,9 +147,16 @@ const GetNumber = () => {
       );
     } catch (error) {
       // Handle error
-      const errorMessage =
-        error.response?.data?.error || "Error cancelling the Number!";
-      toast.error(errorMessage);
+      if (error.response) {
+        // API responded with an error
+        toast.error(error.response.data.message);
+      } else if (error.request) {
+        // Request made but no response received
+        toast.error("No response received from the server. Please try again.");
+      } else {
+        // Other errors during the request setup
+        toast.error(`An unexpected error occurred: ${error.message}`);
+      }
     } finally {
       // Reset loading state
       setLoadingCancel((prev) => ({ ...prev, [orderId]: false }));
@@ -174,7 +181,16 @@ const GetNumber = () => {
 
           resolve();
         } catch (error) {
-          reject(error);
+          if (error.response) {
+            // API responded with an error
+            toast.error(error.response.data.message);
+          } else if (error.request) {
+            // Request made but no response received
+            toast.error("No response received from the server. Please try again.");
+          } else {
+            // Other errors during the request setup
+            toast.error(`An unexpected error occurred: ${error.message}`);
+          }
         } finally {
           fetchBalance(apiKey);
           setLoadingBuyAgain((prev) => ({ ...prev, [orderId]: false }));
