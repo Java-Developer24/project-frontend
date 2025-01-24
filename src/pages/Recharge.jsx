@@ -132,12 +132,12 @@ console.log("trx",maintenanceStatusTrx)
   }
   };
   
-  useEffect(() => {
-    if ( trxTransactionOk) {
-      fetchExchangeRate();
+  // useEffect(() => {
+  //   if ( trxTransactionOk) {
+  //     fetchExchangeRate();
       
-    }
-  }, [transactionOk, trxTransactionOk]);
+  //   }
+  // }, [transactionOk, trxTransactionOk]);
   
   const handleToggleTrx = async () => {
    setIsLoadingTrx(true);

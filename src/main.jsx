@@ -14,7 +14,16 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <React.StrictMode>
       
       <AuthProvider>
-      <Toaster position="top-right" />
+      {/* <Toaster position="top-right"
+       containerStyle={{
+        marginTop: '60px', // Moves the toaster lower
+      }}
+      toastOptions={{
+        style: {
+          fontSize: '14px', // Set your desired font size
+        },
+      }}
+      /> */}
         <App />
       </AuthProvider>
     </React.StrictMode>

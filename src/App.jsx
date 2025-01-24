@@ -73,7 +73,7 @@ function App() {
  
   return (
     <BrowserRouter>
-      <Suspense fallback={<LayoutLoader />}>
+      <Suspense >
         <Routes>
        
           {isMaintenance ? (
@@ -178,10 +178,24 @@ function App() {
                   </ProtectRoute>
                 }
               />
+              <Route
+                path="/email-verify"
+                element={
+                  <ProtectRoute user={user} redirect="/">
+                   <EmailVerify />
+                  </ProtectRoute>
+                }
+              />
+                <Route
+                path="/verify-email"
+                element={
+                  <ProtectRoute user={user} redirect="/">
+                  <VerifyEmail />
+                  </ProtectRoute>
+                }
+              />
               
-              
-              <Route path="/verify-email" element={<VerifyEmail />} /> 
-              <Route path="/email-verify" element={<EmailVerify />} />
+             
               <Route path="/*" element={<NotFound />} />
             </>
           )}

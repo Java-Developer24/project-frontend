@@ -129,42 +129,33 @@ const GetNumber = () => {
   };
 
   const handleOrderCancel = async (orderId, Id, server, hasOtp) => {
-    setLoadingCancel((prev) => ({ ...prev, [orderId]: true }));
-
-    const orderCancelPromise = new Promise((resolve, reject) => {
-      const orderCancelRequest = async () => {
-        try {
-          await axios.get(
-            `/api/service/number-cancel?api_key=${apiKey}&Id=${Id}`
-          );
-          resolve();
-        } catch (error) {
-          reject(error);
-        } finally {
-          fetchBalance(apiKey);
-          handleOrderExpire(orderId);
-          setLoadingCancel((prev) => ({ ...prev, [orderId]: false }));
-        }
-      };
-
-      orderCancelRequest();
-    });
-
-    await toast.promise(orderCancelPromise, {
-      loading: hasOtp ? "Finishing Order..." : "Cancelling Number...",
-      success: () => {
-        return hasOtp
-          ? "Order finished successfully!"
-          : "Number cancelled successfully!";
-      },
-      error: (error) => {
-        const errorMessage =
-          error.response?.data?.error || "Error cancelling the Number!";
-        return errorMessage;
-      },
-    });
+    setLoadingCancel((prev) => ({ ...prev, [orderId]: true })); // Isolate loading per order
+  
+    try {
+      // Make the cancellation request
+      await axios.get(`/api/service/number-cancel?api_key=${apiKey}&Id=${Id}`);
+  
+      // Remove the expired order
+      setOrders((prevOrders) => prevOrders.filter((order) => order._id !== orderId));
+  
+      // Fetch balance and other updates
+      await fetchBalance(apiKey);
+  
+      // Show success message
+      toast.success(
+        hasOtp ? "Order finished successfully!" : "Number cancelled successfully!"
+      );
+    } catch (error) {
+      // Handle error
+      const errorMessage =
+        error.response?.data?.error || "Error cancelling the Number!";
+      toast.error(errorMessage);
+    } finally {
+      // Reset loading state
+      setLoadingCancel((prev) => ({ ...prev, [orderId]: false }));
+    }
   };
-
+  
   const handleBuyAgain = async (server, service, orderId,otpType) => {
     const servicecode = service
       .toLowerCase()
@@ -176,7 +167,7 @@ const GetNumber = () => {
       const buyAgainRequest = async () => {
         try {
           await axios.get(
-            `/api/service/get-number?api_key=${apiKey}&servicecode=${servicecode}&server=${server}`
+            `/api/service/get-number?api_key=${apiKey}&code=${servicecode}&server=${server}`
           );
 
           await fetchOrdersAndTransactions();
@@ -288,10 +279,10 @@ console.log(orders)
                     <span> ₹{order.price}</span>
                   </div>
                   <hr className="border-[#888888] border w-full" />
-                  <div className="w-full flex text-center items-center justify-between">
+                  {/* <div className="w-full flex text-center items-center justify-between">
                     <p>Otp type:</p>
                     <span>{order.otpType.split(" ")[0]}</span>
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className="w-full flex border rounded-2xl items-center justify-center h-[45px]">
@@ -346,24 +337,19 @@ console.log(orders)
 
                 <div className="w-full flex rounded-2xl items-center justify-center mb-2">
                   <div className="bg-transparent pt-4 flex w-full items-center justify-center gap-4">
-                    <Button
-                      className="py-2 px-9 rounded-full border-2 border-primary font-normal bg-primary text-white hover:bg-teal-600 transition-colors duration-200 ease-in-out"
-                      onClick={() =>
-                        handleOrderCancel(
-                          order._id,
-                          order.Id,
-                          order.server,
-                          hasOtp
-                        )
-                      }
-                      isLoading={loadingCancel[order._id]}
-                      disabled={
-                        loadingCancel[order._id] ||
-                        (!buttonStates[order._id] && !hasOtp)
-                      }
-                    >
-                      {hasOtp ? "Finish" : "Cancel"}
-                    </Button>
+                  <Button
+  className="py-2 px-9 rounded-full border-2 border-primary font-normal bg-primary text-white hover:bg-teal-600 transition-colors duration-200 ease-in-out"
+  onClick={() =>
+    handleOrderCancel(order._id, order.Id, order.server, hasOtp)
+  }
+  isLoading={loadingCancel[order._id]} // Loading state isolated per order
+  disabled={
+    loadingCancel[order._id] || (!buttonStates[order._id] && !hasOtp)
+  }
+>
+  {hasOtp ? "Finish" : "Cancel"}
+</Button>
+
                     <Button
                       className="py-2 px-6 rounded-full border-2 border-primary font-normal bg-transparent text-primary hover:bg-primary hover:text-white transition-colors duration-200 ease-in-out"
                       onClick={() =>

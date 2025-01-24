@@ -8,8 +8,21 @@ const AppLayout = () => (WrappedComponent) => {
     return (
       <>
         {/* <Title /> */}
-        <Toaster position="top-right" reverseOrder={false} />
+       
         <Header />
+        <Toaster position="top-right" 
+        
+        containerStyle={{
+          marginTop: '60px', // Moves the toaster lower
+        }}
+        toastOptions={{
+          style: {
+            fontSize: '14px', // Set your desired font size
+          },
+        }}
+        
+        
+        reverseOrder={false} />
         <div className="md:container px-[1rem]">
           <WrappedComponent {...props} />
         </div>

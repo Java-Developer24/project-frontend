@@ -18,8 +18,23 @@ const Home = ({ serviceData }) => {
   const [showContent, setShowContent] = useState(false);
   const [servicesLoading, setServicesLoading] = useState(true);
 
+  // Reset servicesLoading when serviceData changes or when navigating
+  useEffect(() => {
+    if (serviceData) {
+      setServicesLoading(true);
+    }
+  }, [serviceData]);
+
   // Fetch banner info (no disclaimer info now)
   useEffect(() => {
+    const showBanner = localStorage.getItem('showBanner');
+
+    if (showBanner === 'false') {
+      setShowBannerPopup(false); // Don't show the banner if user opted out
+      setShowContent(true); // Show content immediately
+      return; // Skip banner fetch if not needed
+    }
+
     const fetchInfo = async () => {
       try {
         const bannerResponse = await axios.get('/api/info/admin-api/get-info-banner/banner');
@@ -33,6 +48,7 @@ const Home = ({ serviceData }) => {
         console.error("Error fetching info:", error);
       }
     };
+
     fetchInfo();
   }, []);
 
@@ -95,7 +111,7 @@ const Home = ({ serviceData }) => {
       const getNumberRequest = async () => {
         try {
           await axios.get(
-            `/api/service/get-number?api_key=${apiKey}&code=${service.name}&server=${serverNumber}&otpType=${otpType}`
+            `/api/service/get-number?api_key=${apiKey}&code=${service.name}&server=${serverNumber}`
           );
           resolve();
         } catch (error) {
@@ -134,7 +150,6 @@ const Home = ({ serviceData }) => {
           bannerMessage={bannerInfo.message}
         />
       )}
-
       {showContent ? (
         <div className="w-full flex justify-center my-8">
           <div className="w-full max-w-[720px] flex flex-col items-center bg-[#121315] rounded-2xl p-3 md:p-5">

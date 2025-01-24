@@ -295,18 +295,22 @@ const Login = () => {
   
       // Extract token from response
       const { token } = data;
-  
+      
       // Store token and perform login action
       login(token);
   
       // Replace loading toast with success message
       toast.dismiss(loadingToastId);
-      toast.success("Login successful!");
+      
   
       // Redirect after a short delay
       setTimeout(() => {
         navigate("/");
+        toast.success("Login successful!", {
+          duration: 3000, // Display for 3 seconds
+        });
       }, 2000); // Adjust delay as needed
+      
     } catch (error) {
       // Handle any errors during the login request
       toast.dismiss(loadingToastId);
@@ -424,7 +428,7 @@ const Login = () => {
 
                 <div className="flex justify-center mb-4 mt-8">
                   <Turnstile
-                    sitekey="0x4AAAAAAA1Y9hSf6wBjYC09"
+                    sitekey="0x4AAAAAAA5wSvkKtQLEmrgu"
                     
                     onVerify={(token) => {
                       setCaptchaValue(token);
