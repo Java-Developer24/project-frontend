@@ -24,7 +24,7 @@ const VerifyEmail = () => {
 
       try {
         const response = await fetch(
-          `https://project-backend-1-93ag.onrender.com/api/auth/verify-email?token=${token}`,
+          `https://backendapi.tech-developer.online/api/auth/verify-email?token=${token}`,
           { method: "GET" }
         );
 

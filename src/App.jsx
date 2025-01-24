@@ -23,7 +23,7 @@ const About = lazy(() => import("@/pages/About"));
 const CheckOtp = lazy(() => import("@/pages/CheckOtp"));
 
 function App() {
-  axios.defaults.baseURL = "https://project-backend-1-93ag.onrender.com/";
+  axios.defaults.baseURL = "https://backendapi.tech-developer.online/";
   axios.defaults.withCredentials = true;
   const { user, setMaintainance, isGoogleLogin } = useContext(AuthContext);
   const [isMaintenance, setIsMaintenance] = useState(false);
