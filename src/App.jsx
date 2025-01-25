@@ -1,15 +1,15 @@
-import  { lazy, Suspense, useContext, useEffect, useState } from "react";
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
-
-import ProtectRoute from "@/components/auth/ProtectRoute";
-import { LayoutLoader } from "@/components/layout/Loaders";
+import { lazy, Suspense, useContext, useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "./utils/AppContext";
+import ProtectRoute from "@/components/auth/ProtectRoute";
+import { LayoutLoader } from "@/components/layout/Loaders";
+import Maintenance from "@/pages/Maintenance"; // Lazy loaded
 import HomeWrapper from "@/components/layout/HomeWrapper";
-import VerifyEmail from "./pages/VerifyEmail";
-import EmailVerify from "./pages/EmailVerify";
-const Login = lazy(() => import("@/pages/Login"));
+import NotFound from "@/pages/NotFound";
 
+// Other imports for lazy-loaded pages
+const Login = lazy(() => import("@/pages/Login"));
 const SignUp = lazy(() => import("@/pages/SignUp"));
 const ChangePassword = lazy(() => import("@/pages/ChangePassword"));
 const Api_key = lazy(() => import("@/pages/Api"));
@@ -17,65 +17,53 @@ const GetNumber = lazy(() => import("@/pages/GetNumber"));
 const Recharge = lazy(() => import("@/components/layout/RechargeWrapper"));
 const VerifyTransaction = lazy(() => import("@/pages/VerifyTransaction"));
 const History = lazy(() => import("@/pages/History"));
-const NotFound = lazy(() => import("@/pages/NotFound"));
-const Maintenance = lazy(() => import("@/pages/Maintenance"));
 const About = lazy(() => import("@/pages/About"));
 const CheckOtp = lazy(() => import("@/pages/CheckOtp"));
 
 function App() {
   axios.defaults.baseURL = "https://backendapi.tech-developer.online/";
   axios.defaults.withCredentials = true;
+
   const { user, setMaintainance, isGoogleLogin } = useContext(AuthContext);
-  const [isMaintenance, setIsMaintenance] = useState(false);
+  const [isMaintenance, setIsMaintenance] = useState(null);  // Default to null to show loading state while fetching
 
   const fetchMaintenance = async () => {
     try {
       const response = await axios.get("/api/service/maintenance");
-      console.log(response.data.maintainance)
-      const { maintainance, adminAccess, message } = response.data;
-  
+      const { maintainance, adminAccess } = response.data;
+
       if (maintainance && adminAccess) {
-       
-        setMaintainance(true); // Maintenance is on
-        setIsMaintenance(false); // Admin can access, so disable the maintenance block
+        setMaintainance(true);
+        setIsMaintenance(false); // Admin can access, disable maintenance block
       } else if (maintainance) {
-        setMaintainance(true); // Maintenance is on
+        setMaintainance(true);
         setIsMaintenance(true); // Block access for regular users
       } else {
-        setMaintainance(false); // No maintenance
+        setMaintainance(false);
         setIsMaintenance(false); // Allow access
       }
     } catch (error) {
-      if (error.response && error.response.status === 503) {
-        // Maintenance mode is on and the user is not the admin
-        setMaintainance(true);
-        setIsMaintenance(true);
-      } else {
-        console.error("Error fetching maintenance status:", error.message);
-      }
+      console.error("Error fetching maintenance status:", error.message);
+      setIsMaintenance(true); // Assume maintenance on error
     }
   };
-  
-
-  // const fetchMaintenance = async () => {
-  //   const response = await axios.get("/api/service/maintenance");
-  //   setMaintainance(response.data.maintainance);
-  //   setIsMaintenance(response.data.maintainance);
-  // };
-
 
   useEffect(() => {
     fetchMaintenance();
-    const interval = setInterval(fetchMaintenance, 10000);
+    const interval = setInterval(fetchMaintenance, 10000); // Check every 10 seconds
     return () => clearInterval(interval);
   }, []);
 
- 
+  if (isMaintenance === null) {
+    // Return a loading or blank state while fetching the maintenance status
+    return <LayoutLoader />;
+  }
+
   return (
     <BrowserRouter>
-      <Suspense >
+      <Suspense fallback={<LayoutLoader />}>
         <Routes>
-       
+          {/* Render Maintenance page immediately if under maintenance */}
           {isMaintenance ? (
             <>
               <Route path="*" element={<Navigate to="/" />} />
@@ -83,120 +71,44 @@ function App() {
             </>
           ) : (
             <>
+              {/* Regular routes */}
               <Route path="/" element={<HomeWrapper />} />
               <Route
                 path="/change-password"
                 element={
-                  <ProtectRoute
-                    user={user}
-                    googleRedirect="/"
-                    redirect="/"
-                    isGoogleLogin={isGoogleLogin}
-                  >
+                  <ProtectRoute user={user} googleRedirect="/" redirect="/" isGoogleLogin={isGoogleLogin}>
                     <ChangePassword />
                   </ProtectRoute>
                 }
               />
               <Route
                 path="/api"
-                element={
-                  <ProtectRoute user={user} redirect="/">
-                    <Api_key />
-                  </ProtectRoute>
-                }
+                element={<ProtectRoute user={user} redirect="/"><Api_key /></ProtectRoute>}
               />
               <Route
                 path="/get-number"
-                element={
-                  <ProtectRoute user={user} redirect="/">
-                    <GetNumber />
-                  </ProtectRoute>
-                }
+                element={<ProtectRoute user={user} redirect="/"><GetNumber /></ProtectRoute>}
               />
               <Route
                 path="/recharge"
-                element={
-                  <ProtectRoute user={user} redirect="/">
-                    <Recharge />
-                  </ProtectRoute>
-                }
+                element={<ProtectRoute user={user} redirect="/"><Recharge /></ProtectRoute>}
               />
               <Route
                 path="/verify-transaction"
-                element={
-                  <ProtectRoute user={user} redirect="/">
-                    <VerifyTransaction />
-                  </ProtectRoute>
-                }
+                element={<ProtectRoute user={user} redirect="/"><VerifyTransaction /></ProtectRoute>}
               />
               <Route
                 path="/history"
-                element={
-                  <ProtectRoute user={user} redirect="/">
-                    <History />
-                  </ProtectRoute>
-                }
-              />
-             
-              <Route
-                path="/my-orders"
-                element={
-                  <ProtectRoute user={user} redirect="/">
-                    <GetNumber />
-                  </ProtectRoute>
-                }
-              />
-              <Route
-                path="/check-otp"
-                element={
-                  <ProtectRoute user={user} redirect="/">
-                    <CheckOtp />
-                  </ProtectRoute>
-                }
+                element={<ProtectRoute user={user} redirect="/"><History /></ProtectRoute>}
               />
               <Route
                 path="/about"
-                element={
-                  <ProtectRoute user={user || !user} redirect="/">
-                    <About />
-                  </ProtectRoute>
-                }
+                element={<ProtectRoute user={user || !user} redirect="/"><About /></ProtectRoute>}
               />
-              <Route
-                path="/login"
-                element={
-                  <ProtectRoute user={!user} redirect="/">
-                    <Login />
-                  </ProtectRoute>
-                }
-              />
-              <Route
-                path="/signup"
-                element={
-                  <ProtectRoute user={!user} redirect="/">
-                    <SignUp />
-                  </ProtectRoute>
-                }
-              />
-              <Route
-                path="/email-verify"
-                element={
-                  <ProtectRoute user={user} redirect="/">
-                   <EmailVerify />
-                  </ProtectRoute>
-                }
-              />
-                <Route
-                path="/verify-email"
-                element={
-                  <ProtectRoute user={user} redirect="/">
-                  <VerifyEmail />
-                  </ProtectRoute>
-                }
-              />
-              
-             
-              <Route path="/*" element={<NotFound />} />
+              <Route path="/login" element={<ProtectRoute user={!user} redirect="/"><Login /></ProtectRoute>} />
+              <Route path="/signup" element={<ProtectRoute user={!user} redirect="/"><SignUp /></ProtectRoute>} />
+              <Route path="/check-otp" element={<ProtectRoute user={user} redirect="/"><CheckOtp /></ProtectRoute>} />
+              <Route path="*" element={<NotFound />} />
             </>
           )}
         </Routes>
@@ -204,6 +116,5 @@ function App() {
     </BrowserRouter>
   );
 }
-
 
 export default App;

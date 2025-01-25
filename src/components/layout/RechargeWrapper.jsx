@@ -42,9 +42,10 @@ const RechargeWrapper = () => {
     fetchMaintenanceStatusTrx();
   }, []);
 
-  // if (loading) {
-  //   return <LayoutLoader />;
-  // }
+  if (loading) {
+    return <LayoutLoader />;
+  }
+  
 
   return (
     <Recharge

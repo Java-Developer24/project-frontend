@@ -43,6 +43,8 @@ const Recharge = ({ maintenanceStatusTrx, maintenanceStatusUpi }) => {
   const [isLoadingUpi, setIsLoadingUpi] = useState(false);
 const [isLoadingTrx, setIsLoadingTrx] = useState(false);
 
+
+
   useEffect(() => {
     if (maintenanceStatusUpi) {
         setLoading(false); // Stop loading spinner if UPI is under maintenance
@@ -108,11 +110,11 @@ const [isLoadingTrx, setIsLoadingTrx] = useState(false);
   }, [maintenanceStatusUpi]);
 console.log("trx",maintenanceStatusTrx)
 
-// useEffect(() => {
-//   if (!maintenanceStatusTrx) {
-//       fetchExchangeRate();
-//   }
-// }, [maintenanceStatusTrx]); // Trigger when maintenanceStatusTrx changes
+useEffect(() => {
+  if (!maintenanceStatusTrx) {
+      fetchExchangeRate();
+  }
+}, [maintenanceStatusTrx]); // Trigger when maintenanceStatusTrx changes
   
   
   const handleToggleUpi = async () => {
@@ -146,8 +148,8 @@ console.log("trx",maintenanceStatusTrx)
       toast.error("Please enter a valid amount.");
       return;
     }
-    fetchExchangeRate();
-    await new Promise(resolve => setTimeout(resolve, 1500));
+   
+    await new Promise(resolve => setTimeout(resolve, 1000));
     setTrxTransactionOk(true); // For TRX, no QR code is generated
     
    } catch (error) {

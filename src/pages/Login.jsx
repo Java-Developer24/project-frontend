@@ -302,15 +302,23 @@ const Login = () => {
       // Replace loading toast with success message
       toast.dismiss(loadingToastId);
       
-  
-      // Redirect after a short delay
-      setTimeout(() => {
-        navigate("/");
-        toast.success("Login successful!", {
-          duration: 3000, // Display for 3 seconds
-        });
-      }, 2000); // Adjust delay as needed
       
+      // Redirect after a short delay
+      
+      
+      
+       
+        setTimeout(() => {
+       
+         navigate("/");
+          
+        }, 2000); // Adjust delay as needed
+           
+        toast.success("Login successful!", {
+          duration: 4000, // Display for 3 seconds
+          
+        });
+
     } catch (error) {
       // Handle any errors during the login request
       toast.dismiss(loadingToastId);
@@ -496,13 +504,14 @@ const Login = () => {
               </div>
 
               <Button
-                type="submit"
-                className="w-full bg-primary text-white font-medium py-2 rounded-lg mt-3 h-10"
+                  type="submit"
+                className="w-full bg-primary text-white font-medium py-2 rounded-lg mt-3 h-10 hover:bg-primary focus:outline-none"
                 isLoading={isLoading}
                 disabled={email.error || isLoading || !email.value}
               >
                 Send OTP
               </Button>
+
             </form>
           ) : showOTP ? (
             <form onSubmit={handleOtpSubmit}>
@@ -520,7 +529,7 @@ const Login = () => {
                 </div>
                 <Button
                   type="submit"
-                  className="w-full bg-primary text-white font-medium py-2 rounded-lg my-4 h-10"
+                  className="w-full bg-primary text-white font-medium py-2  hover:bg-primary focus:outline-none rounded-lg my-4 h-10"
                   disabled={otp.length !== 6 || isLoading}
                   isLoading={isLoading}
                 >
