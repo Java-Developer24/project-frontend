@@ -37,7 +37,7 @@ const BannerPopup = ({ isOpen, onClose, bannerMessage }) => {
 
   return (
     <AlertDialog open={isOpen}>
-      <AlertDialogContent className="w-full max-w-[330px] h-[480px] sm:h-[400px] sm:max-w-[500px] md:max-w-[720px]  md:h-[430px] flex flex-col items-center justify-center bg-[#121315] rounded-2xl p-3 md:p-5 border-[#1b1d21] border-2">
+      <AlertDialogContent className="w-full max-w-[330px] h-[480px] sm:h-[380px] sm:max-w-[480px] md:max-w-[720px]  md:h-[430px] flex flex-col items-center justify-center bg-[#121315] rounded-2xl p-3 md:p-5 border-[#1b1d21] border-2">
         <AlertDialogHeader className="w-full">
           <AlertDialogTitle className="text-xl font-medium mb-2 text-center text-primary">
             Important Notice
