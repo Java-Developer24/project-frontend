@@ -149,7 +149,7 @@ const GetNumber = () => {
       // Handle error
       if (error.response) {
         // API responded with an error
-        toast.error(error.response.data.message);
+        toast.error(error.response.data.status||error.response.data.message);
       } else if (error.request) {
         // Request made but no response received
         toast.error("No response received from the server. Please try again.");
