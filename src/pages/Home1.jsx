@@ -58,12 +58,28 @@ const Home = ({ serviceData }) => {
     }
   }, [serviceData, showContent]);
 
-  const handleBannerClose = () => {
-    if (dontShowAgain) {
-      localStorage.setItem('showBanner', 'false');
-    }
-    setShowBanner(false);
-  };
+const handleBannerClose = async () => {
+  if (dontShowAgain) {
+    localStorage.setItem('showBanner', 'false');
+  }
+  setShowBanner(false);
+  setServicesLoading(true); // Show loader immediately after banner closes
+  
+  try {
+    // Simulate fetching services if needed
+    await new Promise((resolve) => setTimeout(resolve, 2000)); // Replace with actual service fetch logic if required
+  } finally {
+    setServicesLoading(false); // Hide loader when service data is ready
+  }
+};
+
+// Loader and Service Data Display Logic
+useEffect(() => {
+  if (serviceData && showContent) {
+    setServicesLoading(false);
+  }
+}, [serviceData, showContent]);
+
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value.toLowerCase());
