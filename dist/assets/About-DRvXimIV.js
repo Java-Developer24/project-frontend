@@ -1,4 +1,4 @@
-import{A as l,r as m,j as e}from"./index-HHD5J08U.js";const c=()=>{const[s,t]=m.useState(null),a=n=>{t(o=>o===n?null:n)},r={wordBreak:"break-word",whiteSpace:"pre-line",overflowWrap:"break-word"},i=[{name:"How to use",id:"1",link:`Create account or Log in.
+import{A as l,r as m,j as e}from"./index-DAkEzVty.js";const c=()=>{const[s,t]=m.useState(null),a=n=>{t(o=>o===n?null:n)},r={wordBreak:"break-word",whiteSpace:"pre-line",overflowWrap:"break-word"},i=[{name:"How to use",id:"1",link:`Create account or Log in.
 
 Recharge your wallet via any of the payment methods offered by our website upi or trx.
 
