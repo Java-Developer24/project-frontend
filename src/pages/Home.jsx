@@ -161,7 +161,7 @@ useEffect(() => {
         <div className="w-full flex justify-center my-8">
           <div className="w-full max-w-[720px] flex flex-col items-center bg-[#121315] rounded-2xl p-3 md:p-5">
             {/* Services Box */}
-            <div className="flex flex-col w-full h-[590px] md:h-[520px]">
+            <div className="flex flex-col w-full h-[530px] md:h-[520px]">
               {bannerInfo?.message && showBanner ? (
                 <div className="w-full h-full flex flex-col items-center justify-center bg-[#121315] p-6 rounded-lg">
                   <h2 className="text-xl font-medium mb-4 text-primary">Important Notice</h2>
