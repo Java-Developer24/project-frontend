@@ -125,7 +125,7 @@ useEffect(() => {
       const getNumberRequest = async () => {
         try {
           await axios.get(
-            `http://localhost:3000/api/service/get-number?api_key=${apiKey}&code=${service.name}&server=${serverNumber}`
+            `/api/service/get-number?api_key=${apiKey}&code=${service.name}&server=${serverNumber}`
           );
           resolve();
         } catch (error) {
