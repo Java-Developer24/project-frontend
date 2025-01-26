@@ -105,6 +105,14 @@ function App() {
                 path="/about"
                 element={<ProtectRoute user={user || !user} redirect="/"><About /></ProtectRoute>}
               />
+              <Route
+                path="/my-orders"
+                element={
+                  <ProtectRoute user={user} redirect="/">
+                    <GetNumber />
+                  </ProtectRoute>
+                }
+              />
               <Route path="/login" element={<ProtectRoute user={!user} redirect="/"><Login /></ProtectRoute>} />
               <Route path="/signup" element={<ProtectRoute user={!user} redirect="/"><SignUp /></ProtectRoute>} />
               <Route path="/check-otp" element={<ProtectRoute user={user} redirect="/"><CheckOtp /></ProtectRoute>} />
