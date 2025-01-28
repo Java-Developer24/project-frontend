@@ -115,8 +115,8 @@ const GetNumber = () => {
   }
 
   const handleOrderCancel = async (orderId, Id, server, hasOtp) => {
-    setLoading(true);  // Set loading to true when starting the cancel process
-  setLoadingCancel((prev) => ({ ...prev, [orderId]: true })) // Isolate loading per order
+    // setLoading(true);  // Set loading to true when starting the cancel process
+  setLoadingCancel((prev) => ({ ...prev, [Id]: true })) // Isolate loading per order
 
   try {
     // Make the cancellation request to the backend
@@ -124,7 +124,7 @@ const GetNumber = () => {
 
     if (cancelResponse.status === 200) {
       // Remove the canceled order from the local state
-      setOrders((prevOrders) => prevOrders.filter((order) => order._id !== orderId))
+      setOrders((prevOrders) => prevOrders.filter((order) => order.Id !== orderId))
 
       // Optionally, re-fetch orders and transactions from the backend to ensure data consistency
       await fetchOrdersAndTransactions()
@@ -152,7 +152,7 @@ const GetNumber = () => {
     }
   } finally {
     // Reset loading state for the order cancel button
-    setLoadingCancel((prev) => ({ ...prev, [orderId]: false }))
+    setLoadingCancel((prev) => ({ ...prev, [Id]: false }))
   }
 }
 
@@ -228,7 +228,7 @@ const handleGetOtp = async (orders) => {
   } catch (error) {
     console.error("Error fetching OTP", error)
     setOtpError(true)
-    toast.error("Failed to fetch OTP after multiple attempts. Please try again later.")
+    // toast.error("Failed to fetch OTP after multiple attempts. Please try again later.")
   }
 }
   useEffect(() => {
@@ -253,7 +253,7 @@ const handleGetOtp = async (orders) => {
 
   return (
     <div className="h-[calc(100dvh-4rem)] overflow-y-auto hide-scrollbar">
-      {loading ? (
+      { loading ? (
         <div className="w-full flex h-full justify-center items-center">
         <div className="flex items-center justify-center h-[calc(100dvh-6rem)]">
     <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-primary"></div>
@@ -271,9 +271,9 @@ const handleGetOtp = async (orders) => {
 
                // Get the current time and the order's creation time
   const now = new Date();
-  console.log(now)
+ 
   const orderTime = new Date(order.orderTime); // Replace with the correct timestamp field if necessary
-  console.log(orderTime)
+ 
   const timeDifference = now - orderTime;
 
   // Check if 2 minutes (120,000 ms) have passed since the order was created
@@ -303,7 +303,7 @@ const handleGetOtp = async (orders) => {
                     <span>{order.otpType.split(" ")[0]}</span>
                   </div>
                 </div>
-
+            
                 <div className="w-full flex border rounded-2xl items-center justify-center h-[45px]">
                   <p className="py-4 px-5 flex w-full gap-4 items-center justify-center rounded-lg text-xl font-medium">
                     <span>+91&nbsp;{order.number}</span>
@@ -312,17 +312,17 @@ const handleGetOtp = async (orders) => {
                 <Button
                   variant="link"
                   className="p-0 h-0"
-                  onClick={() => handleCopy(order.number, order._id)}
+                  onClick={() => handleCopy(order.number, order.Id)}
                 >
                   <Icon.copy className="w-4 h-4" />
                 </Button>
               }
               popoverContent="Copied!"
-              open={popoverStates[order._id] || false}
+              open={popoverStates[order.Id] || false}
               setOpen={(isOpen) =>
                 setPopoverStates((prev) => ({
                   ...prev,
-                  [order._id]: isOpen,
+                  [order.Id]: isOpen,
                 }))
               }
                     />
@@ -352,16 +352,17 @@ const handleGetOtp = async (orders) => {
                   <Button
   className="py-2 px-9 rounded-full border-2 border-primary font-normal bg-primary text-white hover:bg-teal-600 transition-colors duration-200 ease-in-out"
   onClick={() => handleOrderCancel(order._id, order.Id, order.server, hasOtp)}
-  isLoading={loadingCancel[order._id]} 
-  disabled={loadingCancel[order._id] || !cancelEnabled || (!buttonStates[order._id] && !hasOtp)} 
+  isLoading={loadingCancel[order.Id]} 
+ 
+  disabled={loadingCancel[order.number] || !cancelEnabled || (!buttonStates[order._id] && !hasOtp)} 
 >
   {hasOtp ? "Finish" : "Cancel"}
 </Button>
 
                     <Button
   className="py-2 px-6 rounded-full border-2 border-primary font-normal bg-transparent text-primary hover:bg-primary hover:text-white transition-colors duration-200 ease-in-out"
-  onClick={() => handleBuyAgain(order.server, order.service, order._id, order.otpType)}
-  isLoading={loadingBuyAgain[order._id]} 
+  onClick={() => handleBuyAgain(order.server, order.service, order.Id, order.otpType)}
+  isLoading={loadingBuyAgain[order.Id]} 
   
 >
   Buy Again
