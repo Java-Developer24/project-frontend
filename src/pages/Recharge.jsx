@@ -1,4 +1,5 @@
 import AppLayout from "@/components/layout/AppLayout"
+import { LayoutLoader } from "@/components/layout/Loaders";
 import { Button, buttonVariants } from "@/components/ui/Button"
 import { Icon } from "@/components/ui/Icons"
 import UpiIcon from "../assets/upi.svg?react"
@@ -23,7 +24,7 @@ import {
   AlertDialogAction,
 } from "@/components/ui/AlertDialog"
 
-const Recharge = ({ maintenanceStatusTrx, maintenanceStatusUpi }) => {
+const Recharge = ({ maintenanceStatusTrx, maintenanceStatusUpi,minUpiAmount }) => {
   const [isUpi, setIsUpi] = useState(true)
   const amount = useInputValidation("", amountValidator)
   const trxamount = useInputValidation("", trxAmountValidator)
@@ -37,38 +38,20 @@ const Recharge = ({ maintenanceStatusTrx, maintenanceStatusUpi }) => {
   const [QRImage, setQRImage] = useState(null)
   const [confirmDialog, setConfirmDialog] = useState(true)
   const [open, setOpen] = useState(false)
-  const [minUpiAmount, setMinUpiAmount] = useState("")
+  // const [minUpiAmount, setMinUpiAmount] = useState("")
   const [isFetchingRate, setIsFetchingRate] = useState(false)
   const [isLoadingUpi, setIsLoadingUpi] = useState(false)
   const [isLoadingTrx, setIsLoadingTrx] = useState(false)
   const [renderKey, setRenderKey] = useState(0) // Added state for re-renders
   const [loading, setLoading] = useState(true) // Added loading state
   const [maintenanceMessage, setMaintenanceMessage] = useState("") // Added maintenance message state
-
   useEffect(() => {
     if (maintenanceStatusUpi) {
-      setLoading(false) // Stop loading spinner if UPI is under maintenance
+      setLoading(false); // Stop loading spinner if UPI is under maintenance
     } else {
-      const fetchMinUpiAmount = async () => {
-        try {
-          const response = await axios.get("/api/config/admin-api/upi-min-amt/min-upi-amount")
-          const { minUpiAmount } = response.data
-
-          setMinUpiAmount(minUpiAmount) // Update after delay
-          setTimeout(() => {
-            setMinUpiAmount(minUpiAmount) // Set minUpiAmount after delay
-            setLoading(false) // Hide loading spinner after delay
-          }, 2000) // Simulating a slight delay for 2 seconds
-        } catch (error) {
-          toast.error("Failed to fetch minimum UPI amount.")
-          console.error("Error fetching min UPI amount:", error)
-          setLoading(false) // Ensure loading is false even if the API request fails
-        }
-      }
-
-      fetchMinUpiAmount()
+      setLoading(false); // Stop loading spinner if the data is already available
     }
-  }, [maintenanceStatusUpi])
+  }, [maintenanceStatusUpi]);
 
   console.log(apiKey)
 
@@ -248,11 +231,7 @@ const Recharge = ({ maintenanceStatusTrx, maintenanceStatusUpi }) => {
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-[calc(100dvh-6rem)]">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-primary"></div>
-      </div>
-    )
+    return <LayoutLoader />
   }
 
   return (
@@ -261,26 +240,28 @@ const Recharge = ({ maintenanceStatusTrx, maintenanceStatusUpi }) => {
       className="h-[calc(100dvh-6rem)] overflow-hidden flex flex-col overflow-y-auto w-full items-center justify-center"
     >
       <style jsx>{`
-        @keyframes fastScroll {
-          0% { transform: translateX(100%); }
-          100% { transform: translateX(-100%); }
-        }
+      @keyframes fastScroll {
+        0% { transform: translateX(100%); }
+        100% { transform: translateX(-100%); }
+      }
 
-        .animate-h1 {
-          animation: fastScroll 10s linear infinite;
-          white-space: nowrap;
-        }
-        .animate-pulse {
-          animation: pulse 1s infinite;
-        }
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.5; }
-        }
-      `}</style>
+      .animate-h1 {
+        animation: fastScroll 5s linear infinite;
+        white-space: nowrap;
+      }
+      
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+      }
+
+      .animate-pulse {
+        animation: pulse 1s infinite;
+      }
+    `}</style>
       {maintenanceMessage && (
         <div className="w-full  text-white py-2 px-4 text-center">
-          <p className="animate-pulse">{maintenanceMessage}</p>
+          <p >{maintenanceMessage}</p>
         </div>
       )}
       <div className="w-full flex justify-center my-10">

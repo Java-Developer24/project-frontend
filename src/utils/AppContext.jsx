@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useRef } from "react";
 import { jwtDecode } from "jwt-decode"; // Correct import without curly braces
 import axios from "axios";
 import { Navigate } from "react-router-dom";
@@ -15,6 +15,7 @@ export function AuthProvider({ children }) {
   const [isGoogleLogin, setIsGoogleLogin] = useState(false); // New state for Google login
   const [googleId, setGoogleId] = useState(null); // State for Google ID
   const [token, setToken] = useState(localStorage.getItem("paidsms-token")); // Store token in state
+  const hasFetchedServiceData = useRef(false); // Prevent duplicate `fetchServiceData` calls
 
   // Function to validate the token by calling the backend
   const validateToken = async (token) => {
@@ -28,14 +29,13 @@ export function AuthProvider({ children }) {
           },
         }
       );
-     
-      
+
       console.log(response.data);
       return response.data; // Returns user data if the token is valid
     } catch (error) {
       console.error("Token validation failed:", error.response?.data?.message);
       localStorage.removeItem("paidsms-token");
-      Navigate("/login")
+      Navigate("/login");
       return null;
     }
   };
@@ -54,7 +54,7 @@ export function AuthProvider({ children }) {
       setUser(apiKeyResponse.data);
       return newApiKey; // Return the new apiKey for dependent calls
     } catch (error) {
-      console.log(error.response?.data?.error);
+      console.error("Error fetching user data:", error.response?.data?.error);
       return null; // Return null if API call fails
     }
   };
@@ -73,114 +73,111 @@ export function AuthProvider({ children }) {
       console.error("Error fetching balance:", error.response?.data?.error);
     }
   };
-
-  const fetchServiceData = async (userId) => {
+  const fetchServiceData = async (userId = null) => {
+    if (maintainance) return; // Prevent fetching if in maintenance mode
+    if (hasFetchedServiceData.current) return; // Prevent duplicate API calls
     try {
       setLoadingServiceData(true);
-      
-      // const response = await axios.get("/api/service/get-service-server-data");
+      hasFetchedServiceData.current = true; // Mark as fetched
+  
       const response = await axios.get(
         `/api/service/get-service-server-data${userId ? `?userId=${userId}` : ""}`
       );
-      
+  
       setServiceData(response.data);
-      
     } catch (error) {
       console.error("Error fetching service data:", error.response?.data?.error);
     } finally {
       setLoadingServiceData(false);
     }
   };
-
+  
   useEffect(() => {
-    // Fetch service data for logged-out users on initial load
-    fetchServiceData();
-  }, []);
-
+    // Only call fetchServiceData when the maintenance mode changes
+    if (!maintainance && !hasFetchedServiceData.current) {
+      fetchServiceData();
+    }
+  }, [maintainance]); // Re-run when maintenance state changes
+  
   useEffect(() => {
     if (token) {
-      // Decode the token to extract user information
       const decodedToken = jwtDecode(token);
       const userId = decodedToken.id;
-      console.log(userId)
       const googleId = decodedToken.id; // Handle Google login ID if available
   
-      // Validate the token against the backend
       validateToken(token).then((user) => {
         if (user) {
-          // Token is valid
           setUser(user); // Ensure user state is set before fetching data
           setIsGoogleLogin(user.logintype === "google");
           setGoogleId(googleId); // Store Google ID for future use
   
-          // Fetch user data and balance after token is validated
           const userIdOrGoogleId = googleId || userId;
+  
           fetchUserData(userIdOrGoogleId).then((newApiKey) => {
             if (newApiKey) {
               fetchBalance(newApiKey); // Fetch balance only after apiKey is set
             }
           });
   
-         // Fetch service data after login
-         fetchServiceData(userIdOrGoogleId); // Pass userIdOrGoogleId here
+          // Fetch service data only if NOT in maintenance mode
+          if (!maintainance) {
+            fetchServiceData(userIdOrGoogleId);
+          }
         } else {
-          // Token validation failed, handle logged-out state
           handleLoggedOutState();
         }
       });
     } else {
-      // No token found, handle logged-out state
       handleLoggedOutState();
     }
-  }, [token]); // Re-run when token changes
-
-  // Helper function to handle logged-out state
+  }, [token, maintainance]); // Re-run when token or maintenance state changes
+  
   const handleLoggedOutState = () => {
     setUser(null);
     setIsGoogleLogin(false);
-    fetchServiceData();
+    if (!maintainance) {
+      fetchServiceData(); // Fetch data for logged-out users only if NOT in maintenance mode
+    }
   };
-
-  const login =  (token) => {
+  
+  const login = (token) => {
     const decodedToken = jwtDecode(token);
     const userId = decodedToken.id;
-    const googleId = decodedToken.googleId; // Handle Google login ID
+    const googleId = decodedToken.googleId;
   
     validateToken(token).then((user) => {
       if (user) {
         localStorage.setItem("paidsms-token", token);
-        setToken(token); // Store token in state
+        setToken(token);
         setUser(user);
         setIsGoogleLogin(user.logintype === "google");
         setGoogleId(googleId);
   
-        // Fetch user data and balance after login
         const userIdOrGoogleId = googleId || userId;
+  
         fetchUserData(userIdOrGoogleId).then((newApiKey) => {
           if (newApiKey) {
-            fetchBalance(newApiKey); // Fetch balance only after apiKey is set
+            fetchBalance(newApiKey);
           }
         });
   
-        // Optionally fetch service data after login
-        fetchServiceData(userIdOrGoogleId);
-      } else {
-        // Handle token validation failure if needed
+        // Avoid calling fetchServiceData here as it's handled in HomeWrapper
       }
     });
   };
   
   const logout = () => {
     localStorage.removeItem("paidsms-token");
-    setToken(null); // Clear token from state
+    setToken(null);
     setUser(null);
     setApiKey(null);
     setBalance(null);
-    setIsGoogleLogin(false); // Reset Google login state
-    setGoogleId(null); // Reset Google ID
-    fetchServiceData(); // Fetch data for logged-out user
+    setIsGoogleLogin(false);
+    setGoogleId(null);
+    hasFetchedServiceData.current = false; // Allow fetching service data again on logout
+    // Do not call fetchServiceData here either
   };
-
+  
   return (
     <AuthContext.Provider
       value={{
@@ -194,10 +191,10 @@ export function AuthProvider({ children }) {
         fetchBalance,
         maintainance,
         setMaintainance,
-        serviceData, // Provide service data to the context consumers
-        loadingServiceData, // Provide loading state for service data
-        isGoogleLogin, // Provide Google login state to context consumers
-        googleId, // Provide Google ID to the context consumers
+        serviceData,
+        loadingServiceData,
+        isGoogleLogin,
+        googleId,
       }}
     >
       {children}

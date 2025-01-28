@@ -306,18 +306,18 @@ const Login = () => {
       // Redirect after a short delay
       
       
-      
+      toast.success("Login successful!", {
+        duration: 4000, // Display for 3 seconds
+        
+      });
        
         setTimeout(() => {
-       
+          toast.dismiss();
          navigate("/");
           
         }, 2000); // Adjust delay as needed
            
-        toast.success("Login successful!", {
-          duration: 4000, // Display for 3 seconds
-          
-        });
+      
 
     } catch (error) {
       // Handle any errors during the login request

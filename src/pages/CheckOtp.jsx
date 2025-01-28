@@ -76,16 +76,16 @@ const CheckOtp = () => {
               </h3>
             </div>
           ) : (
-            otpText.map((name, index) => (
+            otpText.map(({ serviceName, server }, index) => (
               <div
                 key={index}
                 className="bg-[#282828] py-4 px-3 md:px-5 flex mb-1 w-full items-center justify-between rounded-lg"
               >
                 <h3 className="capitalize font-medium flex flex-col items-start">
-                  {name}
+                  {serviceName}
                 </h3>
                 <div className="flex items-center">
-                  <p className="text-base">Server 1</p>
+                  <p className="text-base">{server || "Server 1"}</p>
                 </div>
               </div>
             ))

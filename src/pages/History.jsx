@@ -134,7 +134,16 @@ const History = () => {
     moment(b.date_time).isBefore(moment(a.date_time)) ? 1 : -1
 );
 
-  
+const sortedRechargeHistory = rechargeHistory.sort((a, b) => {
+  const dateA = moment(a.date_time, "DD/MM/YYYY hh:mm:ss A").toDate();
+  const dateB = moment(b.date_time, "DD/MM/YYYY hh:mm:ss A").toDate();
+  return dateB - dateA; // Descending order
+});
+
+// const sortedRechargeHistory = rechargeHistory
+// .sort((a, b) =>
+//   moment(b.date_time, "DD/MM/YYYY HH:mm:ss A").isBefore(moment(a.date_time, "DD/MM/YYYY HH:mm:ss A")) ? 1 : -1
+// );
   
   // Pagination handlers for Recharge History
   const handleRechargeLimitChange = (value) => {
@@ -179,11 +188,10 @@ const History = () => {
   const startIndexRecharge = (rechargeCurrentPage - 1) * rechargeLimit;
   const startIndexTransaction = (transactionCurrentPage - 1) * transactionLimit;
 
-  const sortedRechargeHistory = rechargeHistory.sort((a, b) =>
-    moment(b.date).isBefore(moment(a.date)) ? 1 : -1
-);
-  const rechargeData = Array.isArray(rechargeHistory)
-    ? rechargeHistory.slice(
+ 
+  
+  const rechargeData = Array.isArray(sortedRechargeHistory)
+    ? sortedRechargeHistory.slice(
         startIndexRecharge,
         startIndexRecharge + rechargeLimit
       )
@@ -432,7 +440,7 @@ const NumberTable = ({ data, currentPage, limit }) => {
               <td className="p-2 font-normal text-sm">{entry.Id}</td>
               <td className="p-2 font-normal text-sm">{entry.number}</td>
               <td className="p-2 font-normal text-sm max-w-[400px]" style={{ wordBreak: 'break-word' }}>
-                {entry.otp && entry.otp[0] && entry.otp}
+                {entry.otp}
               </td>
               <td className="p-2 font-normal text-sm">
                 {moment(entry.date, "YYYY/MM/DDTHH:mm:ss A").isValid()
@@ -551,11 +559,8 @@ const NumberTabelMob = ({ data, currentPage, limit }) => {
     className="border-b-2 border-[#949494] p-3"
     style={wrapStyle}
   >
-    {item.otp ? (
-      <span dangerouslySetInnerHTML={{ __html: item.otp }} />
-    ) : (
-      <span>N/A</span>
-    )}
+    {item.otp
+    }
   </td>
 </tr>
 

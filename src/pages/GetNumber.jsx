@@ -115,112 +115,122 @@ const GetNumber = () => {
   }
 
   const handleOrderCancel = async (orderId, Id, server, hasOtp) => {
-    setLoadingCancel((prev) => ({ ...prev, [orderId]: true })) // Isolate loading per order
+    setLoading(true);  // Set loading to true when starting the cancel process
+  setLoadingCancel((prev) => ({ ...prev, [orderId]: true })) // Isolate loading per order
 
-    try {
-      // Make the cancellation request
-      await axios.get(`/api/service/number-cancel?api_key=${apiKey}&Id=${Id}`)
+  try {
+    // Make the cancellation request to the backend
+    const cancelResponse = await axios.get(`/api/service/number-cancel?api_key=${apiKey}&Id=${Id}`)
 
-      // Remove the expired order
+    if (cancelResponse.status === 200) {
+      // Remove the canceled order from the local state
       setOrders((prevOrders) => prevOrders.filter((order) => order._id !== orderId))
 
-      // Fetch balance and other updates
-      await fetchBalance(apiKey)
+      // Optionally, re-fetch orders and transactions from the backend to ensure data consistency
       await fetchOrdersAndTransactions()
+
+      // Fetch balance if necessary
+      await fetchBalance(apiKey)
+
       // Show success message
       toast.success(hasOtp ? "Order finished successfully!" : "Number cancelled successfully!")
-    } catch (error) {
-      // Handle error
-      if (error.response) {
-        // API responded with an error
-        toast.error(error.response.data.status || error.response.data.message)
-      } else if (error.request) {
-        // Request made but no response received
-        toast.error("No response received from the server. Please try again.")
-      } else {
-        // Other errors during the request setup
-        toast.error(`An unexpected error occurred: ${error.message}`)
-      }
-    } finally {
-      // Reset loading state
-      setLoadingCancel((prev) => ({ ...prev, [orderId]: false }))
+    } else {
+      // Handle error if cancellation failed on backend
+      toast.error("Failed to cancel the order. Please try again.")
     }
+  } catch (error) {
+    // Handle error
+    if (error.response) {
+      // API responded with an error
+      toast.error(error.response.data.status || error.response.data.message)
+    } else if (error.request) {
+      // Request made but no response received
+      toast.error("No response received from the server. Please try again.")
+    } else {
+      // Other errors during the request setup
+      toast.error(`An unexpected error occurred: ${error.message}`)
+    }
+  } finally {
+    // Reset loading state for the order cancel button
+    setLoadingCancel((prev) => ({ ...prev, [orderId]: false }))
   }
+}
 
-  const handleBuyAgain = async (server, service, orderId, otpType) => {
-    const servicecode = service
-      .toLowerCase()
-      .replace(/\s+/g, "")
-      .replace(/[^a-z0-9]/g, "")
+  
+const handleBuyAgain = async (server, service, orderId) => {
+  const servicecode = service
+    .toLowerCase()
+    .replace(/\s+/g, "")
+    .replace(/[^a-z0-9]/g, "")
 
-    setLoadingBuyAgain((prev) => ({ ...prev, [orderId]: true }))
-    const buyAgainPromise = new Promise((resolve, reject) => {
-      const buyAgainRequest = async () => {
-        try {
-          await axios.get(`/api/service/get-number?api_key=${apiKey}&code=${servicecode}&server=${server}`)
+  setLoadingBuyAgain((prev) => ({ ...prev, [orderId]: true })) // Isolate loading for Buy Again
 
-          await fetchOrdersAndTransactions()
-
-          resolve()
-        } catch (error) {
-          if (error.response) {
-            // API responded with an error
-            toast.error(error.response.data.message)
-          } else if (error.request) {
-            // Request made but no response received
-            toast.error("No response received from the server. Please try again.")
-          } else {
-            // Other errors during the request setup
-            toast.error(`An unexpected error occurred: ${error.message}`)
-          }
-        } finally {
-          fetchBalance(apiKey)
-          setLoadingBuyAgain((prev) => ({ ...prev, [orderId]: false }))
-        }
-      }
-
-      buyAgainRequest()
-    })
-
-    await toast.promise(buyAgainPromise, {
-      loading: "Buying Again...",
-      success: () => {
-        return "Number bought again successfully!"
-      },
-      error: (error) => {
-        console.error("Error buying the number again", error)
-        const errorMessage = error.response?.data?.error || "Please try again."
-        return errorMessage
-      },
-    })
+  try {
+    await axios.get(`/api/service/get-number?api_key=${apiKey}&code=${servicecode}&server=${server}`)
+    await fetchOrdersAndTransactions() // Fetch orders again after successful buy
+    toast.success("Number bought again successfully!")
+  } catch (error) {
+    if (error.response) {
+      // API responded with an error
+      toast.error( error.response.data.error)
+    } else if (error.request) {
+      // Request made but no response received
+      toast.error("No response received from the server. Please try again.")
+    } else {
+      // Other errors during the request setup
+      toast.error(`An unexpected error occurred: ${error.message}`)
+    }
+  } finally {
+    setLoadingBuyAgain((prev) => ({ ...prev, [orderId]: false })) // Reset loading state
+    fetchBalance(apiKey)
   }
+}
 
-  const handleGetOtp = async (orders) => {
+ // Helper function to retry the OTP request
+const retryRequest = async (fn, retries = 15, delay = 2000) => {
+  let lastError
+  for (let attempt = 1; attempt <= retries; attempt++) {
     try {
-      const updatedTransactions = [] // Store updated transactions
-
-      for (const order of orders) {
-        const { Id } = order // Use 'number' here
-        const response = await axios.get(
-          `/api/service/get-otp?api_key=${apiKey}&Id=${Id}`, // Use 'number' here
-        )
-
-        // Assuming your backend returns updated transaction data for the specific number
-        if (response.data && response.data.length > 0) {
-          updatedTransactions.push(...response.data)
-        }
-      }
-
-      // Fetch the latest transactions
-      const transactionsResponse = await axios.get(`/api/history/transaction-history-user?userId=${user.userId}`)
-      setTransactions(transactionsResponse.data)
-      setOtpError(false)
+      // Try the request
+      return await fn()
     } catch (error) {
-      console.error("Error fetching OTP", error)
-      setOtpError(true)
+      lastError = error
+      console.log(`Attempt ${attempt} failed. Retrying...`)
+      // Wait for the specified delay before retrying
+      await new Promise(resolve => setTimeout(resolve, delay))
     }
   }
+  
+}
 
+const handleGetOtp = async (orders) => {
+  try {
+    const updatedTransactions = [] // Store updated transactions
+
+    // Retry fetching OTP for each order
+    for (const order of orders) {
+      const { Id } = order // Use 'Id' here
+      const otpRequest = () => axios.get(`/api/service/get-otp?api_key=${apiKey}&Id=${Id}`) // OTP request function
+
+      // Retry OTP request 3 times, with a 2-second delay between attempts
+      const response = await retryRequest(otpRequest, 3, 2000)
+
+      // Assuming your backend returns updated transaction data for the specific number
+      if (response.data && response.data.length > 0) {
+        updatedTransactions.push(...response.data)
+      }
+    }
+
+    // Fetch the latest transactions
+    const transactionsResponse = await axios.get(`/api/history/transaction-history-user?userId=${user.userId}`)
+    setTransactions(transactionsResponse.data)
+    setOtpError(false)
+  } catch (error) {
+    console.error("Error fetching OTP", error)
+    setOtpError(true)
+    toast.error("Failed to fetch OTP after multiple attempts. Please try again later.")
+  }
+}
   useEffect(() => {
     let interval
 
@@ -245,7 +255,9 @@ const GetNumber = () => {
     <div className="h-[calc(100dvh-4rem)] overflow-y-auto hide-scrollbar">
       {loading ? (
         <div className="w-full flex h-full justify-center items-center">
-          <SnapLoader />
+        <div className="flex items-center justify-center h-[calc(100dvh-6rem)]">
+    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-primary"></div>
+  </div>
         </div>
       ) : orders.length === 0 ? (
         <div className="h-[calc(100dvh-4rem)]  flex items-center justify-center relative">
@@ -257,6 +269,16 @@ const GetNumber = () => {
         orders.map((order) => {
           const hasOtp = getOTPFromTransaction(order.Id).some((otp) => otp !== "Waiting for SMS")
 
+               // Get the current time and the order's creation time
+  const now = new Date();
+  console.log(now)
+  const orderTime = new Date(order.orderTime); // Replace with the correct timestamp field if necessary
+  console.log(orderTime)
+  const timeDifference = now - orderTime;
+
+  // Check if 2 minutes (120,000 ms) have passed since the order was created
+  const cancelEnabled = timeDifference >= 120000;
+          
           return (
             <div className="w-full flex justify-center my-12" key={order._id}>
               <div className="w-full max-w-[520px] flex flex-col items-center border-2 border-[#1b1d21] bg-[#121315] rounded-2xl p-5">
@@ -286,19 +308,23 @@ const GetNumber = () => {
                   <p className="py-4 px-5 flex w-full gap-4 items-center justify-center rounded-lg text-xl font-medium">
                     <span>+91&nbsp;{order.number}</span>
                     <PopoverComponent
-                      buttonComponent={
-                        <Button variant="link" className="p-0 h-0" onClick={() => handleCopy(order.number, order._id)}>
-                          <Icon.copy className="w-4 h-4" />
-                        </Button>
-                      }
-                      popoverContent="Copied!"
-                      open={popoverStates[order._id] || false}
-                      setOpen={(isOpen) =>
-                        setPopoverStates((prev) => ({
-                          ...prev,
-                          [order._id]: isOpen,
-                        }))
-                      }
+              buttonComponent={
+                <Button
+                  variant="link"
+                  className="p-0 h-0"
+                  onClick={() => handleCopy(order.number, order._id)}
+                >
+                  <Icon.copy className="w-4 h-4" />
+                </Button>
+              }
+              popoverContent="Copied!"
+              open={popoverStates[order._id] || false}
+              setOpen={(isOpen) =>
+                setPopoverStates((prev) => ({
+                  ...prev,
+                  [order._id]: isOpen,
+                }))
+              }
                     />
                   </p>
                 </div>
@@ -323,22 +349,23 @@ const GetNumber = () => {
 
                 <div className="w-full flex rounded-2xl items-center justify-center mb-2">
                   <div className="bg-transparent pt-4 flex w-full items-center justify-center gap-4">
-                    <Button
-                      className="py-2 px-9 rounded-full border-2 border-primary font-normal bg-primary text-white hover:bg-teal-600 transition-colors duration-200 ease-in-out"
-                      onClick={() => handleOrderCancel(order._id, order.Id, order.server, hasOtp)}
-                      isLoading={loadingCancel[order._id]} // Loading state isolated per order
-                      disabled={loadingCancel[order._id] || (!buttonStates[order._id] && !hasOtp)}
-                    >
-                      {hasOtp ? "Finish" : "Cancel"}
-                    </Button>
+                  <Button
+  className="py-2 px-9 rounded-full border-2 border-primary font-normal bg-primary text-white hover:bg-teal-600 transition-colors duration-200 ease-in-out"
+  onClick={() => handleOrderCancel(order._id, order.Id, order.server, hasOtp)}
+  isLoading={loadingCancel[order._id]} 
+  disabled={loadingCancel[order._id] || !cancelEnabled || (!buttonStates[order._id] && !hasOtp)} 
+>
+  {hasOtp ? "Finish" : "Cancel"}
+</Button>
 
                     <Button
-                      className="py-2 px-6 rounded-full border-2 border-primary font-normal bg-transparent text-primary hover:bg-primary hover:text-white transition-colors duration-200 ease-in-out"
-                      onClick={() => handleBuyAgain(order.server, order.service, order._id, order.otpType)}
-                      isLoading={loadingBuyAgain[order._id]}
-                    >
-                      Buy Again
-                    </Button>
+  className="py-2 px-6 rounded-full border-2 border-primary font-normal bg-transparent text-primary hover:bg-primary hover:text-white transition-colors duration-200 ease-in-out"
+  onClick={() => handleBuyAgain(order.server, order.service, order._id, order.otpType)}
+  isLoading={loadingBuyAgain[order._id]} 
+  
+>
+  Buy Again
+</Button>
                   </div>
                 </div>
               </div>

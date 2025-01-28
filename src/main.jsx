@@ -11,21 +11,23 @@ import { Toaster } from "react-hot-toast";
 ReactDOM.createRoot(document.getElementById("root")).render(
   
   <GoogleOAuthProvider clientId="74486074672-jq8gtjssidki6epdg4v2ddm25nd42kl1.apps.googleusercontent.com">
-    <React.StrictMode>
+   
       
       <AuthProvider>
-      {/* <Toaster position="top-right"
-       containerStyle={{
-        marginTop: '60px', // Moves the toaster lower
-      }}
-      toastOptions={{
-        style: {
-          fontSize: '14px', // Set your desired font size
-        },
-      }}
-      /> */}
+      <Toaster position="top-right" 
+        containerStyle={{
+          marginTop: '60px', // Moves the toaster lower
+        }}
+        toastOptions={{
+          style: {
+            fontSize: '14px', // Set your desired font size
+          },
+        }}
+        
+        
+        reverseOrder={false} />
         <App />
       </AuthProvider>
-    </React.StrictMode>
+    
   </GoogleOAuthProvider>
 );
