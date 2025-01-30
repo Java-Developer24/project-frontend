@@ -75,40 +75,47 @@ const GetNumber = () => {
     return `${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`
   }
 
-  const Countdown = ({ expirationTime, orderId }) => {
-    const [remainingTime, setRemainingTime] = useState(() => calculateRemainingTime(expirationTime))
+  
+  const Countdown = ({ expirationTime, orderId, server }) => {
+    const [remainingTime, setRemainingTime] = useState(() => calculateRemainingTime(expirationTime));
 
     useEffect(() => {
       const updateRemainingTime = () => {
-        const newRemainingTime = calculateRemainingTime(expirationTime)
+        const newRemainingTime = calculateRemainingTime(expirationTime);
         setRemainingTime((prevTime) => {
           if (prevTime !== newRemainingTime) {
             if (newRemainingTime === "00:00") {
               setButtonStates((prevStates) => ({
                 ...prevStates,
                 [orderId]: true,
-              }))
-              handleOrderExpire(orderId)
-            } else if (newRemainingTime.split(":")[0] <= "17") {
-              setButtonStates((prevStates) => ({
-                ...prevStates,
-                [orderId]: true,
-              }))
+              }));
+              handleOrderExpire(orderId);
+            } else {
+              console.log("server",server)
+              const threshold = server === 7 ? 7 : 17; // Dynamic threshold
+              console.log("threshold",threshold)
+              if (parseInt(newRemainingTime.split(":")[0]) <= threshold) {
+                setButtonStates((prevStates) => ({
+                  ...prevStates,
+                  [orderId]: true,
+                }));
+              }
             }
-            return newRemainingTime
+            return newRemainingTime;
           }
-          return prevTime
-        })
-      }
+          return prevTime;
+        });
+      };
 
-      updateRemainingTime() // Initial call
-      const interval = setInterval(updateRemainingTime, 1000)
+      updateRemainingTime(); // Initial call
+      const interval = setInterval(updateRemainingTime, 1000);
 
-      return () => clearInterval(interval)
-    }, [expirationTime, orderId])
+      return () => clearInterval(interval);
+    }, [expirationTime, orderId, server]);
 
-    return <span className="font-mono">{remainingTime}</span>
-  }
+    return <span className="font-mono">{remainingTime}</span>;
+};
+
   const handleOrderExpire = async (orderId) => {
     setOrders((prevOrders) => prevOrders.filter((order) => order._id !== orderId))
     await fetchBalance(apiKey)
@@ -270,14 +277,7 @@ const handleGetOtp = async (orders) => {
           const hasOtp = getOTPFromTransaction(order.Id).some((otp) => otp !== "Waiting for SMS")
 
                // Get the current time and the order's creation time
-  const now = new Date();
  
-  const orderTime = new Date(order.orderTime); // Replace with the correct timestamp field if necessary
- 
-  const timeDifference = now - orderTime;
-
-  // Check if 2 minutes (120,000 ms) have passed since the order was created
-  const cancelEnabled = timeDifference >= 120000;
           
           return (
             <div className="w-full flex justify-center my-12" key={order._id}>
@@ -331,7 +331,7 @@ const handleGetOtp = async (orders) => {
                 <div className="w-full flex rounded-2xl items-center justify-center h-[60px]">
                   <div className="bg-transparent max-w-56 py-4 px-5 flex w-full items-center justify-between rounded-lg">
                     <p className="font-normal">Remaining Time</p>
-                    <Countdown expirationTime={order.expirationTime} orderId={order._id} />
+                    <Countdown expirationTime={order.expirationTime} orderId={order._id} server={order.server} />
                   </div>
                 </div>
                 <div className="w-full flex bg-[#444444] border-2 border-[#888888] rounded-2xl items-center justify-center max-h-[100px] overflow-y-scroll hide-scrollbar">
@@ -354,7 +354,7 @@ const handleGetOtp = async (orders) => {
   onClick={() => handleOrderCancel(order._id, order.Id, order.server, hasOtp)}
   isLoading={loadingCancel[order.Id]} 
  
-  disabled={loadingCancel[order.number] || !cancelEnabled || (!buttonStates[order._id] && !hasOtp)} 
+  disabled={loadingCancel[order.number] || (!buttonStates[order._id] && !hasOtp)} 
 >
   {hasOtp ? "Finish" : "Cancel"}
 </Button>
