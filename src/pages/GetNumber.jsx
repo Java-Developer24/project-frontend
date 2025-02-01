@@ -194,7 +194,7 @@ const handleBuyAgain = async (server, service, orderId) => {
 }
 
  // Helper function to retry the OTP request
-const retryRequest = async (fn, retries = 15, delay = 2000) => {
+const retryRequest = async (fn, retries = 30, delay = 2000) => {
   let lastError
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
