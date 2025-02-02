@@ -19,6 +19,8 @@ const VerifyTransaction = lazy(() => import("@/pages/VerifyTransaction"));
 const History = lazy(() => import("@/pages/History"));
 const About = lazy(() => import("@/pages/About"));
 const CheckOtp = lazy(() => import("@/pages/CheckOtp"));
+const EmailVerify = lazy(() => import("@/pages/EmailVerify"));
+const VerifyEmail = lazy(() => import("@/pages/VerifyEmail"));
 
 function App() {
   axios.defaults.baseURL = "https://api.paidsms.org/";
@@ -96,6 +98,14 @@ function App() {
               <Route
                 path="/verify-transaction"
                 element={<ProtectRoute user={user} redirect="/"><VerifyTransaction /></ProtectRoute>}
+              />
+              <Route
+                path="/email-verify"
+                element={<ProtectRoute user={!user} redirect="/"><EmailVerify /></ProtectRoute>}
+              />
+              <Route
+                path="/verify-email"
+                element={<ProtectRoute user={!user} redirect="/"><VerifyEmail /></ProtectRoute>}
               />
               <Route
                 path="/history"
