@@ -108,7 +108,7 @@ export function AuthProvider({ children }) {
       validateToken(token).then((user) => {
         if (user) {
           setUser(user); // Ensure user state is set before fetching data
-          setIsGoogleLogin(user.logintype === "google");
+          setIsGoogleLogin(decodedToken.logintype === "google");
           setGoogleId(googleId); // Store Google ID for future use
   
           const userIdOrGoogleId = googleId || userId;
