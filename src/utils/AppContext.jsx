@@ -105,15 +105,15 @@ export function AuthProvider({ children }) {
       const userId = decodedToken.id;
       const googleId = decodedToken.id; // Handle Google login ID if available
       console.log("Decoded Token:", decodedToken); // Add this line for debugging
-      console.log("Decoded login type:", decodedToken.logintype);
+      console.log("Decoded login type:", decodedToken.loginType);      
       validateToken(token).then((user) => {
         if (user) {
           setUser(user); // Ensure user state is set before fetching data
           
-          console.log(decodedToken.logintype === "google")
-          console.log("decode login type",decodedToken.logintype)
-          console.log("user logintype from login",user.logintype)
-          setIsGoogleLogin(decodedToken.logintype === "google");
+          console.log(decodedToken.loginType === "google")
+          console.log("decode login type",decodedToken.loginType)
+          
+          setIsGoogleLogin(decodedToken.loginType === "google");
           setGoogleId(googleId); // Store Google ID for future use
   
           const userIdOrGoogleId = googleId || userId;
@@ -150,17 +150,18 @@ export function AuthProvider({ children }) {
     const userId = decodedToken.id;
     const googleId = decodedToken.googleId;
     console.log("Decoded Token:", decodedToken); // Add this line for debugging
-console.log("Decoded login type:", decodedToken.logintype);
+console.log("Decoded login type:", decodedToken.loginType);
   
     validateToken(token).then((user) => {
       if (user) {
         localStorage.setItem("paidsms-token", token);
         setToken(token);
         setUser(user);
-        console.log("decode login type",decodedToken.logintype)
-        console.log("decode login type",decodedToken.logintype)
-        console.log("user logintype from login",user.logintype)
-        setIsGoogleLogin(decodedToken.logintype === "google");
+        console.log("decode login type",decodedToken.loginType
+        )
+        console.log("decode login type",decodedToken.loginType        )
+        console.log("user logintype from login",user.loginType        )
+        setIsGoogleLogin(decodedToken.loginType          === "google");
         setGoogleId(googleId);
   
         const userIdOrGoogleId = googleId || userId;
