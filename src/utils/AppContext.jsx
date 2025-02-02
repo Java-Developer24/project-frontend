@@ -110,7 +110,7 @@ export function AuthProvider({ children }) {
           setUser(user); // Ensure user state is set before fetching data
           
           console.log(decodedToken.logintype === "google")
-          console.log(decodedToken.logintype)
+          console.log("decode login type",decodedToken.logintype)
           console.log("user logintype from login",user.logintype)
           setIsGoogleLogin(decodedToken.logintype === "google");
           setGoogleId(googleId); // Store Google ID for future use
@@ -154,6 +154,8 @@ export function AuthProvider({ children }) {
         localStorage.setItem("paidsms-token", token);
         setToken(token);
         setUser(user);
+        console.log("decode login type",decodedToken.logintype)
+          console.log("user logintype from login",user.logintype)
         setIsGoogleLogin(decodedToken.logintype === "google");
         setGoogleId(googleId);
   
