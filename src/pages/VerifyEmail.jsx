@@ -24,7 +24,7 @@ const VerifyEmail = () => {
 
       try {
         const response = await fetch(
-          `https://backendapi.tech-developer.online/api/auth/verify-email?token=${token}`,
+          `https://api.paidsms.org/api/auth/verify-email?token=${token}`,
           { method: "GET" }
         );
 

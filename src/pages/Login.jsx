@@ -342,7 +342,7 @@ const Login = () => {
   const handleGoogleLogin = async () => {
     try {
       
-     window.location.href = "https://backendapi.tech-developer.online/api/auth/google/login"
+     window.location.href = "https://api.paidsms.org/api/auth/google/login"
     } catch (error) {
       // Example of redirecting with error message
         navigate(`/login?error=${encodeURIComponent(error?.response?.data?.message || "Login failed. Please try again.")}`);

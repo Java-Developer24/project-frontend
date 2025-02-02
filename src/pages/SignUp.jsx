@@ -104,7 +104,7 @@ const SignUp = () => {
   
   const handleGoogleLogin = () => {
     // Redirect to the backend's Google OAuth route
-    window.location.href = "https://backendapi.tech-developer.online/api/auth/google/signup";
+    window.location.href = "https://api.paidsms.org/api/auth/google/signup";
   };
   
  
