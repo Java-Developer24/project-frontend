@@ -104,7 +104,8 @@ export function AuthProvider({ children }) {
       const decodedToken = jwtDecode(token);
       const userId = decodedToken.id;
       const googleId = decodedToken.id; // Handle Google login ID if available
-
+      console.log("Decoded Token:", decodedToken); // Add this line for debugging
+      console.log("Decoded login type:", decodedToken.logintype);
       validateToken(token).then((user) => {
         if (user) {
           setUser(user); // Ensure user state is set before fetching data
@@ -148,6 +149,8 @@ export function AuthProvider({ children }) {
     const decodedToken = jwtDecode(token);
     const userId = decodedToken.id;
     const googleId = decodedToken.googleId;
+    console.log("Decoded Token:", decodedToken); // Add this line for debugging
+console.log("Decoded login type:", decodedToken.logintype);
   
     validateToken(token).then((user) => {
       if (user) {
