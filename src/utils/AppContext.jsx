@@ -104,13 +104,14 @@ export function AuthProvider({ children }) {
       const decodedToken = jwtDecode(token);
       const userId = decodedToken.id;
       const googleId = decodedToken.id; // Handle Google login ID if available
-  
+
       validateToken(token).then((user) => {
         if (user) {
           setUser(user); // Ensure user state is set before fetching data
+          
           console.log(decodedToken.logintype === "google")
           console.log(decodedToken.logintype)
-
+          console.log("user logintype from login",user.logintype)
           setIsGoogleLogin(decodedToken.logintype === "google");
           setGoogleId(googleId); // Store Google ID for future use
   
@@ -153,7 +154,7 @@ export function AuthProvider({ children }) {
         localStorage.setItem("paidsms-token", token);
         setToken(token);
         setUser(user);
-        setIsGoogleLogin(user.logintype === "google");
+        setIsGoogleLogin(decodedToken.logintype === "google");
         setGoogleId(googleId);
   
         const userIdOrGoogleId = googleId || userId;
