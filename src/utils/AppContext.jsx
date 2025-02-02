@@ -155,7 +155,8 @@ export function AuthProvider({ children }) {
         setToken(token);
         setUser(user);
         console.log("decode login type",decodedToken.logintype)
-          console.log("user logintype from login",user.logintype)
+        console.log("decode login type",decodedToken.logintype)
+        console.log("user logintype from login",user.logintype)
         setIsGoogleLogin(decodedToken.logintype === "google");
         setGoogleId(googleId);
   
