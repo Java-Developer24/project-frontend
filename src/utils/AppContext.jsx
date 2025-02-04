@@ -92,12 +92,12 @@ export function AuthProvider({ children }) {
     }
   };
   
-  useEffect(() => {
-    // Only call fetchServiceData when the maintenance mode changes
-    if (!maintainance && !hasFetchedServiceData.current) {
-      fetchServiceData();
-    }
-  }, [maintainance]); // Re-run when maintenance state changes
+  // useEffect(() => {
+  //   // Only call fetchServiceData when the maintenance mode changes
+  //   if (!maintainance && !hasFetchedServiceData.current) {
+  //     fetchServiceData();
+  //   }
+  // }, [maintainance]); // Re-run when maintenance state changes
   
   useEffect(() => {
     if (token) {
