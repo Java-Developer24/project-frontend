@@ -572,7 +572,9 @@ const NumberTabelMob = ({ data, currentPage, limit }) => {
                   className="border-b-2 border-[#949494] p-3"
                   style={wrapStyle}
                 >
-                {item.date_time}
+                {moment(item.date_time, "DD/MM/YYYYThh:mm:ss A").format(
+                  "DD/MM/YYYY hh:mm:ss A"
+                )}
 
                 </td>
               </tr>
