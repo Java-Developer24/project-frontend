@@ -23,7 +23,7 @@ const CheckOtp = () => {
 
     try {
       const response = await axios.get(
-        `/api/server/check-otp?otp=${encodedotp}&api_key=${apiKey}`
+        `http://localhost:3000/api/server/check-otp?otp=${encodedotp}&api_key=${apiKey}`
       );
 
       setOtp("");
@@ -77,6 +77,7 @@ const CheckOtp = () => {
             </div>
           ) : (
             otpText.map(({ serviceName, server }, index) => (
+              
               <div
                 key={index}
                 className="bg-[#282828] py-4 px-3 md:px-5 flex mb-1 w-full items-center justify-between rounded-lg"
@@ -85,6 +86,7 @@ const CheckOtp = () => {
                   {serviceName}
                 </h3>
                 <div className="flex items-center">
+                
                   <p className="text-base">{server || "Server 1"}</p>
                 </div>
               </div>
