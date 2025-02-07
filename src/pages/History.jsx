@@ -130,9 +130,12 @@ const History = () => {
   }
 
   // // Sort transactions by date and time
-  const sortedFilteredTransactionHistory = filteredTransactionHistory.sort((a, b) =>
-    moment(b.date_time).isBefore(moment(a.date_time)) ? 1 : -1
-);
+  const sortedFilteredTransactionHistory = filteredTransactionHistory.sort((a, b) => {
+    const dateA = moment(a.date_time, "DD/MM/YYYY hh:mm:ss A").toDate();
+    const dateB = moment(b.date_time, "DD/MM/YYYY hh:mm:ss A").toDate();
+    return dateB - dateA; // Descending order
+  });
+
 
 const sortedRechargeHistory = rechargeHistory.sort((a, b) => {
   const dateA = moment(a.date_time, "DD/MM/YYYY hh:mm:ss A").toDate();
