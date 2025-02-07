@@ -74,21 +74,25 @@ const Api = () => {
       name: "Get Number",
       id: "request_number",
       link: "api/service/get-number?api_key=${api_key}&code=${service_code}&server=${serverNumber}",
+      data:`response { "number" : "9876543210" , "Id" : "123456789"}`
     },
     {
       name: "Get Otp",
       id: "activation_status",
       link: "api/service/get-otp?api_key=${api_key}&Id=${id}",
+      data:`response { "otp" : "waiting" }`
     },
     {
       name: "Cancel Number",
       id: "get_activation_status",
       link: "api/service/number-cancel?api_key=${api_key}&Id=${id}",
+      data:`response { "status" : "Number Cancelled" }`
     },
     {
       name: "Get Balance",
       id: "balance_request",
       link: "api/user/balance?api_key=${api_key}",
+      data:`response { "balance" : "6.40" }`
     },
     {
       name: "Service Code and Price",
@@ -161,6 +165,9 @@ const Api = () => {
                   <p className="text-sm text-white">
                     {axios.defaults.baseURL}
                     {section.link}
+                    <br />
+                    <br />
+                    {section.data}
                   </p>
                 </div>
               )}
